@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(npx create-react-app:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(./Microsoft.Health.Fhir.Liquid.Converter.Tool.exe --help)",
+      "Bash(./Microsoft.Health.Fhir.Liquid.Converter.Tool.exe convert --help)",
+      "Bash(./Microsoft.Health.Fhir.Liquid.Converter.Tool.exe convert -d \"../../../../data/Templates/Json\" -r \"ExamplePatient.liquid\" --help)",
+      "Bash(npm run dev:*)",
+      "Bash(taskkill:*)",
+      "Bash(./Microsoft.Health.Fhir.Liquid.Converter.Tool.exe convert:*)",
+      "Bash(./src/Microsoft.Health.Fhir.Liquid.Converter.Tool/bin/Debug/net8.0/Microsoft.Health.Fhir.Liquid.Converter.Tool.exe convert -d \"C:\\Users\\chnaj\\FHIR-Converter\\data\\Templates\\Json\" -r \"ExamplePatient.liquid\" -n \"C:\\Users\\chnaj\\FHIR-Converter\\fhir-converter-ui\\backend\\temp\\test_input.txt\" -f \"C:\\Users\\chnaj\\FHIR-Converter\\fhir-converter-ui\\backend\\temp\\test_output.json\")",
+      "Bash(./src/Microsoft.Health.Fhir.Liquid.Converter.Tool/bin/Debug/net8.0/Microsoft.Health.Fhir.Liquid.Converter.Tool.exe convert -d \"data/Templates/Json\" -r \"ExamplePatient.liquid\" -n \"fhir-converter-ui/backend/temp/test_input.txt\" -f \"fhir-converter-ui/backend/temp/test_output.json\")",
+      "Bash(./src/Microsoft.Health.Fhir.Liquid.Converter.Tool/bin/Debug/net8.0/Microsoft.Health.Fhir.Liquid.Converter.Tool.exe convert -d \"data/Templates/Json\" -r \"ExamplePatient\" -n \"fhir-converter-ui/backend/temp/test_input.txt\" -f \"fhir-converter-ui/backend/temp/test_output.json\")",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
