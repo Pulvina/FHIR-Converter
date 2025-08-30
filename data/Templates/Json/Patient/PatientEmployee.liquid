@@ -1,0 +1,107 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.employeeId | default: msg.employeeNumber | default: msg.staffId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Employee ID: {{ msg.employeeId | default: msg.employeeNumber | default: msg.staffId }}{% if msg.company or msg.employer %}, Company: {{ msg.company | default: msg.employer }}{% endif %}{% if msg.department %}, Dept: {{ msg.department }}{% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "secondary",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "EN",
+                        "display": "Employer number"
+                    }
+                ]
+            },
+            {% if msg.company or msg.employer -%}
+            "system": "http://{{ msg.company | default: msg.employer | downcase | replace: ' ', '' }}.com/employee",
+            {% else -%}
+            "system": "http://company.com/employee",
+            {% endif -%}
+            "value": "{{ msg.employeeId | default: msg.employeeNumber | default: msg.staffId | default: msg.employee_id }}",
+            {% if msg.company or msg.employer -%}
+            "assigner": {
+                "display": "{{ msg.company | default: msg.employer }}"
+            }
+            {% endif -%}
+        },
+        {% if msg.badgeNumber or msg.badge -%}
+        {
+            "use": "secondary",
+            "type": {
+                "text": "Badge Number"
+            },
+            "value": "{{ msg.badgeNumber | default: msg.badge }}"
+        }
+        {% endif -%}
+    ],
+    "active": {% if msg.employmentStatus == "active" or msg.status == "active" -%}true{% else -%}{{ msg.active | default: true }}{% endif -%},
+    {% if msg.employeeName or msg.name or msg.firstName or msg.lastName -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.employeeName or msg.name -%}
+            "text": "{{ msg.employeeName | default: msg.name }}",
+            {% endif -%}
+            {% if msg.firstName -%}
+            "given": ["{{ msg.firstName }}"],
+            {% endif -%}
+            {% if msg.lastName -%}
+            "family": "{{ msg.lastName }}"
+            {% endif -%}
+        }
+    ],
+    {% endif -%}
+    {% if msg.workEmail or msg.email -%}
+    "telecom": [
+        {
+            "system": "email",
+            "value": "{{ msg.workEmail | default: msg.email }}",
+            "use": "work"
+        }
+        {% if msg.workPhone or msg.phone -%}
+        ,{
+            "system": "phone",
+            "value": "{{ msg.workPhone | default: msg.phone }}",
+            "use": "work"
+        }
+        {% endif -%}
+    ],
+    {% endif -%}
+    {% comment -%} Employment details extension {% endcomment -%}
+    {% if msg.department or msg.jobTitle or msg.hireDate -%}
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-employment",
+            "extension": [
+                {% if msg.department -%}
+                {
+                    "url": "department",
+                    "valueString": "{{ msg.department }}"
+                },
+                {% endif -%}
+                {% if msg.jobTitle or msg.position -%}
+                {
+                    "url": "job-title",
+                    "valueString": "{{ msg.jobTitle | default: msg.position }}"
+                },
+                {% endif -%}
+                {% if msg.hireDate or msg.startDate -%}
+                {
+                    "url": "hire-date",
+                    "valueDate": "{{ msg.hireDate | default: msg.startDate }}"
+                }
+                {% endif -%}
+            ]
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/employer",
+        "display": "{{ msg.company | default: msg.employer | default: 'Employer Organization' }}"
+    }
+}

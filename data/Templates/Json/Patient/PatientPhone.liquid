@@ -1,0 +1,68 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with phone: {{ msg.phone | default: msg.phoneNumber | default: msg.mobilePhone | default: msg.homePhone | default: msg.workPhone }}</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Phone contact information {% endcomment -%}
+    "telecom": [
+        {% if msg.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.phone }}",
+            "use": "{{ msg.phoneType | default: 'home' | downcase }}"
+        }{% if msg.phoneNumber or msg.mobilePhone or msg.homePhone or msg.workPhone %},{% endif %}
+        {% endif -%}
+        {% if msg.phoneNumber -%}
+        {
+            "system": "phone", 
+            "value": "{{ msg.phoneNumber }}",
+            "use": "home"
+        }{% if msg.mobilePhone or msg.homePhone or msg.workPhone %},{% endif %}
+        {% endif -%}
+        {% if msg.mobilePhone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.mobilePhone }}",
+            "use": "mobile"
+        }{% if msg.homePhone or msg.workPhone %},{% endif %}
+        {% endif -%}
+        {% if msg.homePhone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.homePhone }}",
+            "use": "home"
+        }{% if msg.workPhone %},{% endif %}
+        {% endif -%}
+        {% if msg.workPhone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.workPhone }}",
+            "use": "work"
+        }
+        {% endif -%}
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/phone-contacts",
+        "display": "Phone Contact Registry"
+    }
+}

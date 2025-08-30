@@ -1,0 +1,83 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.PatientId | default: msg.patient_id | default: msg.id | default: msg.ID | to_json_string | generate_uuid }}",
+    {% comment -%} Generate narrative text for FHIR compliance {% endcomment -%}
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient {{ msg.firstName | default: msg.first_name | default: msg.givenName | default: msg.given }} {{ msg.lastName | default: msg.last_name | default: msg.familyName | default: msg.family }}{% if msg.dateOfBirth or msg.dob or msg.DOB or msg.birthDate or msg.birth_date %}, DOB: {{ msg.dateOfBirth | default: msg.dob | default: msg.DOB | default: msg.birthDate | default: msg.birth_date }}{% endif %}{% if msg.gender or msg.sex %}, Gender: {{ msg.gender | default: msg.sex }}{% endif %}{% if msg.PatientId or msg.patient_id or msg.id or msg.ID %}, ID: {{ msg.PatientId | default: msg.patient_id | default: msg.id | default: msg.ID }}{% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "urn:oid:2.16.840.1.113883.19.5",
+            "value": "{{ msg.PatientId | default: msg.patient_id | default: msg.id | default: msg.ID | default: msg.mrn | default: msg.MRN | default: msg.medical_record_number | default: msg.medicalRecordNumber }}"
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "{{ msg.lastName | default: msg.last_name | default: msg.familyName | default: msg.family_name | default: msg.surname | default: msg.LastName | default: msg.LAST_NAME }}",
+            "given": [
+                "{{ msg.firstName | default: msg.first_name | default: msg.givenName | default: msg.given_name | default: msg.forename | default: msg.FirstName | default: msg.FIRST_NAME | default: msg.fname }}"
+            ]
+        }
+    ],
+    {% comment -%} Handle phone number variations {% endcomment -%}
+    {% if msg.phoneNumber or msg.phone_number or msg.phone or msg.telephone or msg.tel or msg.PhoneNumber or msg.PHONE_NUMBER or msg.contact_number or msg.contactNumber -%}
+    "telecom": [
+        {
+            "system": "phone",
+            "value": "{{ msg.phoneNumber | default: msg.phone_number | default: msg.phone | default: msg.telephone | default: msg.tel | default: msg.PhoneNumber | default: msg.PHONE_NUMBER | default: msg.contact_number | default: msg.contactNumber }}",
+            "use": "home"
+        }{% if msg.email or msg.emailAddress or msg.email_address or msg.Email or msg.EMAIL_ADDRESS %},
+        {
+            "system": "email",
+            "value": "{{ msg.email | default: msg.emailAddress | default: msg.email_address | default: msg.Email | default: msg.EMAIL_ADDRESS }}"
+        }{% endif %}
+    ],
+    {% elsif msg.email or msg.emailAddress or msg.email_address or msg.Email or msg.EMAIL_ADDRESS -%}
+    "telecom": [
+        {
+            "system": "email",
+            "value": "{{ msg.email | default: msg.emailAddress | default: msg.email_address | default: msg.Email | default: msg.EMAIL_ADDRESS }}"
+        }
+    ],
+    {% endif -%}
+    {% comment -%} Handle gender variations {% endcomment -%}
+    "gender": {% if msg.gender == 'M' or msg.gender == 'Male' or msg.gender == 'male' or msg.sex == 'M' or msg.sex == 'Male' or msg.sex == 'male' or msg.patient_gender == 'M' or msg.patientGender == 'M' -%}
+        "male"
+    {% elsif msg.gender == 'F' or msg.gender == 'Female' or msg.gender == 'female' or msg.sex == 'F' or msg.sex == 'Female' or msg.sex == 'female' or msg.patient_gender == 'F' or msg.patientGender == 'F' -%}
+        "female"
+    {% elsif msg.gender == 'U' or msg.gender == 'Unknown' or msg.gender == 'unknown' or msg.sex == 'U' or msg.sex == 'Unknown' or msg.sex == 'unknown' -%}
+        "unknown"
+    {% else -%}
+        "other"
+    {% endif -%},
+    {% comment -%} Handle birth date variations {% endcomment -%}
+    {% if msg.dateOfBirth or msg.dob or msg.DOB or msg.birthDate or msg.birth_date or msg.birthdate or msg.date_of_birth or msg.DateOfBirth or msg.BIRTH_DATE -%}
+    "birthDate": "{{ msg.dateOfBirth | default: msg.dob | default: msg.DOB | default: msg.birthDate | default: msg.birth_date | default: msg.birthdate | default: msg.date_of_birth | default: msg.DateOfBirth | default: msg.BIRTH_DATE }}",
+    {% endif -%}
+    {% comment -%} Handle address variations {% endcomment -%}
+    {% if msg.address or msg.Address or msg.ADDRESS or msg.street_address or msg.streetAddress -%}
+    "address": [
+        {
+            "use": "home",
+            "type": "physical",
+            "text": "{{ msg.address | default: msg.Address | default: msg.ADDRESS | default: msg.street_address | default: msg.streetAddress }}"
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/2.16.840.1.113883.19.5",
+        "display": "Good Health Clinic"
+    }
+}

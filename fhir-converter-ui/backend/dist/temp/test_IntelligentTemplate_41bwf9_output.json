@@ -1,0 +1,27 @@
+{
+  "Status": "OK",
+  "FhirResource": {
+  "resourceType": "Patient",
+  "id": "p002",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">FHIR-Structured Patient Data</div>"
+  },
+  "active": true,
+  "name": [
+    {
+      "use": "official",
+      "family": "Smith",
+      "given": [
+        "John",
+        "Michael"
+      ]
+    }
+  ],
+  "gender": "male",
+  "managingOrganization": {
+    "reference": "Organization/fhir-passthrough",
+    "display": "FHIR Passthrough System"
+  }
+}
+}

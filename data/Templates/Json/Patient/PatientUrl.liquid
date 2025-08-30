@@ -1,0 +1,75 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with website: {{ msg.website | default: msg.url | default: msg.personalWebsite }}</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} URL/Website contact information {% endcomment -%}
+    "telecom": [
+        {% if msg.website -%}
+        {
+            "system": "url",
+            "value": "{{ msg.website }}",
+            "use": "{{ msg.websiteType | default: 'home' | downcase }}"
+        }{% if msg.url or msg.personalWebsite or msg.socialMedia %},{% endif %}
+        {% endif -%}
+        {% if msg.url -%}
+        {
+            "system": "url",
+            "value": "{{ msg.url }}",
+            "use": "home"
+        }{% if msg.personalWebsite or msg.socialMedia %},{% endif %}
+        {% endif -%}
+        {% if msg.personalWebsite -%}
+        {
+            "system": "url",
+            "value": "{{ msg.personalWebsite }}",
+            "use": "home"
+        }{% if msg.socialMedia %},{% endif %}
+        {% endif -%}
+        {% if msg.socialMedia -%}
+        {
+            "system": "url", 
+            "value": "{{ msg.socialMedia }}",
+            "use": "home",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/contactpoint-comment",
+                    "valueString": "Social media profile"
+                }
+            ]
+        }
+        {% endif -%}
+        {% comment -%} Include email if present {% endcomment -%}
+        {% if msg.email -%}
+        ,{
+            "system": "email",
+            "value": "{{ msg.email }}",
+            "use": "home"
+        }
+        {% endif -%}
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/digital-health",
+        "display": "Digital Health Platform"
+    }
+}

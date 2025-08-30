@@ -1,0 +1,115 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with multiple addresses</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Multiple addresses handling {% endcomment -%}
+    "address": [
+        {% comment -%} Home address {% endcomment -%}
+        {% if msg.homeAddress or msg.residentialAddress -%}
+        {% assign homeAddr = msg.homeAddress | default: msg.residentialAddress -%}
+        {
+            "use": "home",
+            {% if homeAddr.street or homeAddr.line1 or homeAddr.address -%}
+            "line": [
+                "{{ homeAddr.street | default: homeAddr.line1 | default: homeAddr.address }}"
+                {% if homeAddr.line2 or homeAddr.apt -%}
+                ,"{{ homeAddr.line2 | default: homeAddr.apt }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if homeAddr.city -%}
+            "city": "{{ homeAddr.city }}",
+            {% endif -%}
+            {% if homeAddr.state or homeAddr.province -%}
+            "state": "{{ homeAddr.state | default: homeAddr.province }}",
+            {% endif -%}
+            {% if homeAddr.zip or homeAddr.zipCode or homeAddr.postalCode -%}
+            "postalCode": "{{ homeAddr.zip | default: homeAddr.zipCode | default: homeAddr.postalCode }}",
+            {% endif -%}
+            {% if homeAddr.country -%}
+            "country": "{{ homeAddr.country }}"
+            {% endif -%}
+        },
+        {% endif -%}
+        {% comment -%} Work address {% endcomment -%}
+        {% if msg.workAddress or msg.businessAddress -%}
+        {% assign workAddr = msg.workAddress | default: msg.businessAddress -%}
+        {
+            "use": "work",
+            {% if workAddr.street or workAddr.line1 or workAddr.address -%}
+            "line": [
+                "{{ workAddr.street | default: workAddr.line1 | default: workAddr.address }}"
+                {% if workAddr.line2 or workAddr.suite -%}
+                ,"{{ workAddr.line2 | default: workAddr.suite }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if workAddr.city -%}
+            "city": "{{ workAddr.city }}",
+            {% endif -%}
+            {% if workAddr.state or workAddr.province -%}
+            "state": "{{ workAddr.state | default: workAddr.province }}",
+            {% endif -%}
+            {% if workAddr.zip or workAddr.zipCode or workAddr.postalCode -%}
+            "postalCode": "{{ workAddr.zip | default: workAddr.zipCode | default: workAddr.postalCode }}",
+            {% endif -%}
+            {% if workAddr.country -%}
+            "country": "{{ workAddr.country }}"
+            {% endif -%}
+        },
+        {% endif -%}
+        {% comment -%} Mailing address {% endcomment -%}
+        {% if msg.mailingAddress or msg.shippingAddress -%}
+        {% assign mailAddr = msg.mailingAddress | default: msg.shippingAddress -%}
+        {
+            "use": "temp",
+            "type": "postal",
+            {% if mailAddr.street or mailAddr.line1 or mailAddr.address -%}
+            "line": [
+                "{{ mailAddr.street | default: mailAddr.line1 | default: mailAddr.address }}"
+                {% if mailAddr.line2 -%}
+                ,"{{ mailAddr.line2 }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if mailAddr.city -%}
+            "city": "{{ mailAddr.city }}",
+            {% endif -%}
+            {% if mailAddr.state or mailAddr.province -%}
+            "state": "{{ mailAddr.state | default: mailAddr.province }}",
+            {% endif -%}
+            {% if mailAddr.zip or mailAddr.zipCode or mailAddr.postalCode -%}
+            "postalCode": "{{ mailAddr.zip | default: mailAddr.zipCode | default: mailAddr.postalCode }}",
+            {% endif -%}
+            {% if mailAddr.country -%}
+            "country": "{{ mailAddr.country }}"
+            {% endif -%}
+        }
+        {% endif -%}
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/multi-address",
+        "display": "Multiple Address Healthcare System"
+    }
+}

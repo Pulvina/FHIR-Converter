@@ -1,0 +1,112 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient: {% if msg.culture == 'eastern' or msg.nameOrder == 'family-given' %}{{ msg.familyName | default: msg.lastName }} {{ msg.givenName | default: msg.firstName }}{% else %}{{ msg.givenName | default: msg.firstName }} {{ msg.familyName | default: msg.lastName }}{% endif %}{% if msg.culture %} ({{ msg.culture }} format){% endif %}</div>"
+    },
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            {% comment -%} Handle different cultural name orders {% endcomment -%}
+            {% if msg.familyName or msg.lastName or msg.surname -%}
+            "family": "{{ msg.familyName | default: msg.lastName | default: msg.surname }}",
+            {% endif -%}
+            {% if msg.givenName or msg.firstName -%}
+            "given": [
+                {% if msg.givenName -%}
+                "{{ msg.givenName }}"
+                {% elsif msg.firstName -%}
+                "{{ msg.firstName }}"
+                {% endif -%}
+                {% if msg.middleName or msg.secondGivenName -%}
+                ,"{{ msg.middleName | default: msg.secondGivenName }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% comment -%} Add cultural/language extensions {% endcomment -%}
+            {% if msg.culture or msg.language or msg.nameOrder -%}
+            "extension": [
+                {% if msg.culture -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/humanname-culture",
+                    "valueString": "{{ msg.culture }}"
+                },
+                {% endif -%}
+                {% if msg.language -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/humanname-language",
+                    "valueString": "{{ msg.language }}"
+                },
+                {% endif -%}
+                {% if msg.nameOrder -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/humanname-order",
+                    "valueString": "{{ msg.nameOrder }}"
+                }
+                {% endif -%}
+            ]
+            {% endif -%}
+        }{% if msg.nativeName or msg.originalName or msg.transliterationName %},{% endif %}
+        {% comment -%} Add native/original name if different {% endcomment -%}
+        {% if msg.nativeName or msg.originalName or msg.transliterationName -%}
+        {
+            "use": "usual",
+            "text": "{{ msg.nativeName | default: msg.originalName | default: msg.transliterationName }}",
+            {% if msg.nativeLanguage or msg.originalLanguage -%}
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/humanname-language",
+                    "valueString": "{{ msg.nativeLanguage | default: msg.originalLanguage }}"
+                }
+            ]
+            {% endif -%}
+        }
+        {% endif -%}
+    ],
+    {% if msg.birthDate or msg.dob or msg.dateOfBirth -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob | default: msg.dateOfBirth }}",
+    {% endif -%}
+    {% if msg.gender or msg.sex -%}
+    "gender": {% assign g = msg.gender | default: msg.sex | downcase -%}
+        {% if g == 'male' or g == 'm' -%}"male"
+        {% elsif g == 'female' or g == 'f' -%}"female"
+        {% elsif g == 'other' or g == 'o' -%}"other"
+        {% else -%}"unknown"
+        {% endif -%},
+    {% endif -%}
+    {% comment -%} Add nationality/ethnicity if available {% endcomment -%}
+    {% if msg.nationality or msg.ethnicity or msg.country -%}
+    "extension": [
+        {% if msg.nationality -%}
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-nationality",
+            "extension": [
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "text": "{{ msg.nationality }}"
+                    }
+                }
+            ]
+        },
+        {% endif -%}
+        {% if msg.ethnicity -%}
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension": [
+                {
+                    "url": "text",
+                    "valueString": "{{ msg.ethnicity }}"
+                }
+            ]
+        }
+        {% endif -%}
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/international",
+        "display": "International Healthcare Registry"
+    }
+}

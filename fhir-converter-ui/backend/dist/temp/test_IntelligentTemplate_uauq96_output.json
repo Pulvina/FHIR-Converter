@@ -1,0 +1,51 @@
+{
+  "Status": "OK",
+  "FhirResource": {
+  "resourceType": "Patient",
+  "id": "af0cf566-329e-6546-77f6-9e5e9e4ba7ff",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Intelligent Patient Template</div>"
+  },
+  "active": true,
+  "identifier": [
+    {
+      "use": "usual",
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MR",
+            "display": "Medical record number"
+          }
+        ]
+      },
+      "system": "urn:oid:2.16.840.1.113883.4.1",
+      "value": "P-99021"
+    }
+  ],
+  "name": [
+    {
+      "use": "official",
+      "text": "[first, Maria][last, Gonzalez]"
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1978-03-12",
+  "address": [
+    {
+      "use": "home",
+      "line": [
+        "123 Calle Mayor",
+        "45 King St"
+      ],
+      "city": "Madrid",
+      "country": "ES"
+    }
+  ],
+  "managingOrganization": {
+    "reference": "Organization/intelligent-system",
+    "display": "Intelligent Template System"
+  }
+}
+}

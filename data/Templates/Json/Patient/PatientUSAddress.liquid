@@ -1,0 +1,80 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with US address format</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} US-specific address format {% endcomment -%}
+    "address": [
+        {
+            "use": "{{ msg.addressType | default: 'home' | downcase }}",
+            {% comment -%} US address lines {% endcomment -%}
+            {% if msg.streetNumber or msg.street or msg.addressLine1 -%}
+            "line": [
+                {% if msg.streetNumber and msg.street -%}
+                "{{ msg.streetNumber }} {{ msg.street }}"
+                {% elsif msg.addressLine1 -%}
+                "{{ msg.addressLine1 }}"
+                {% else -%}
+                "{{ msg.street }}"
+                {% endif -%}
+                {% if msg.addressLine2 or msg.apt or msg.suite -%}
+                ,"{{ msg.addressLine2 | default: msg.apt | default: msg.suite }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if msg.city -%}
+            "city": "{{ msg.city }}",
+            {% endif -%}
+            {% comment -%} US state validation {% endcomment -%}
+            {% if msg.state -%}
+            {% assign stateUpper = msg.state | upcase -%}
+            "state": "{{ stateUpper }}",
+            {% endif -%}
+            {% comment -%} US ZIP code format (5 or 5+4 digits) {% endcomment -%}
+            {% if msg.zip or msg.zipCode -%}
+            {% assign zipCode = msg.zip | default: msg.zipCode -%}
+            "postalCode": "{{ zipCode }}",
+            {% endif -%}
+            "country": "US",
+            {% comment -%} US-specific extensions {% endcomment -%}
+            "extension": [
+                {% if msg.county -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-county",
+                    "valueString": "{{ msg.county }}"
+                },
+                {% endif -%}
+                {% if msg.congressionalDistrict -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/us-core-county",
+                    "valueString": "{{ msg.congressionalDistrict }}"
+                }
+                {% endif -%}
+            ]
+        }
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/us-healthcare",
+        "display": "US Healthcare Provider"
+    }
+}

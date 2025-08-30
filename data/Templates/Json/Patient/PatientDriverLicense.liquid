@@ -1,0 +1,54 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.driverLicense | default: msg.driversLicense | default: msg.dlNumber | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient DL: {{ msg.driverLicense | default: msg.driversLicense | default: msg.dlNumber }}{% if msg.dlState or msg.state %}, State: {{ msg.dlState | default: msg.state }}{% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "secondary",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "DL",
+                        "display": "Driver's license number"
+                    }
+                ]
+            },
+            {% if msg.dlState or msg.state -%}
+            "system": "urn:oid:2.16.840.1.113883.4.3.{{ msg.dlState | default: msg.state }}",
+            {% else -%}
+            "system": "urn:oid:2.16.840.1.113883.4.3",
+            {% endif -%}
+            "value": "{{ msg.driverLicense | default: msg.driversLicense | default: msg.dlNumber | default: msg.driver_license_number }}"
+        }
+    ],
+    "active": true,
+    {% if msg.name or msg.driverName -%}
+    "name": [
+        {
+            "use": "official",
+            "text": "{{ msg.name | default: msg.driverName }}"
+        }
+    ],
+    {% endif -%}
+    {% if msg.dlState or msg.state or msg.address -%}
+    "address": [
+        {
+            "use": "home",
+            {% if msg.dlState or msg.state -%}
+            "state": "{{ msg.dlState | default: msg.state }}",
+            {% endif -%}
+            {% if msg.address -%}
+            "text": "{{ msg.address }}"
+            {% endif -%}
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/dmv",
+        "display": "Department of Motor Vehicles"
+    }
+}

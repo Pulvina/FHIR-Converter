@@ -1,0 +1,48 @@
+{
+  "patientInfo": {
+    "id": "P-2024-001",
+    "personalDetails": {
+      "name": {
+        "given": ["Michael", "James"],
+        "family": "Brown"
+      },
+      "birthInfo": {
+        "date": "1980-12-25",
+        "place": "Chicago, IL"
+      },
+      "gender": "male",
+      "maritalStatus": "married"
+    },
+    "contactDetails": [
+      {
+        "type": "home",
+        "phone": "555-1111",
+        "preferred": true
+      },
+      {
+        "type": "work", 
+        "phone": "555-2222",
+        "preferred": false
+      },
+      {
+        "type": "email",
+        "value": "michael.brown@email.com"
+      }
+    ],
+    "addresses": [
+      {
+        "type": "home",
+        "street": ["789 Pine Street", "Apt 4B"],
+        "city": "Chicago",
+        "state": "IL",
+        "postalCode": "60601",
+        "country": "USA"
+      }
+    ]
+  },
+  "medicalInfo": {
+    "primaryPhysician": "Dr. Sarah Davis",
+    "allergies": ["Penicillin", "Shellfish"],
+    "conditions": ["Hypertension", "Diabetes Type 2"]
+  }
+}

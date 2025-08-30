@@ -1,0 +1,27 @@
+{
+  "Status": "OK",
+  "FhirResource": {
+  "resourceType": "Patient",
+  "id": "p001",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">FHIR-Structured Patient Data</div>"
+  },
+  "active": true,
+  "name": [
+    {
+      "use": "official",
+      "family": "Levi",
+      "given": [
+        "Yael"
+      ]
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1990-04-15",
+  "managingOrganization": {
+    "reference": "Organization/fhir-passthrough",
+    "display": "FHIR Passthrough System"
+  }
+}
+}

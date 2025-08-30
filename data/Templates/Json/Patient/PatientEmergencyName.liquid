@@ -1,0 +1,93 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient: {{ msg.patientName | default: msg.name }}{% if msg.emergencyContact.name %}, Emergency Contact: {{ msg.emergencyContact.name }}{% endif %}</div>"
+    },
+    "active": true,
+    {% comment -%} Patient name {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% assign fullName = msg.patientName | default: msg.name | default: msg.fullName -%}
+            {% if fullName -%}
+            {% assign nameParts = fullName | split: ' ' -%}
+            {% if nameParts.size >= 2 -%}
+            "family": "{{ nameParts | last }}",
+            "given": [
+                {% assign givenCount = nameParts.size | minus: 1 -%}
+                {% for i in (0..givenCount) -%}
+                {% if i < givenCount -%}
+                "{{ nameParts[i] }}"{% unless i == givenCount | minus: 1 %},{% endunless %}
+                {% endif -%}
+                {% endfor -%}
+            ]
+            {% else -%}
+            "text": "{{ fullName }}"
+            {% endif -%}
+            {% endif -%}
+        }
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    {% comment -%} Emergency contact information {% endcomment -%}
+    {% if msg.emergencyContact -%}
+    "contact": [
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                            "code": "{{ msg.emergencyContact.relationship | default: 'E' }}",
+                            "display": "{{ msg.emergencyContact.relationshipText | default: 'Emergency contact' }}"
+                        }
+                    ]
+                }
+            ],
+            {% if msg.emergencyContact.name -%}
+            "name": {
+                {% assign emergencyFullName = msg.emergencyContact.name -%}
+                {% assign emergencyParts = emergencyFullName | split: ' ' -%}
+                {% if emergencyParts.size >= 2 -%}
+                "family": "{{ emergencyParts | last }}",
+                "given": [
+                    {% assign emergencyGivenCount = emergencyParts.size | minus: 1 -%}
+                    {% for i in (0..emergencyGivenCount) -%}
+                    {% if i < emergencyGivenCount -%}
+                    "{{ emergencyParts[i] }}"{% unless i == emergencyGivenCount | minus: 1 %},{% endunless %}
+                    {% endif -%}
+                    {% endfor -%}
+                ]
+                {% else -%}
+                "text": "{{ emergencyFullName }}"
+                {% endif -%}
+            },
+            {% endif -%}
+            {% if msg.emergencyContact.phone or msg.emergencyContact.email -%}
+            "telecom": [
+                {% if msg.emergencyContact.phone -%}
+                {
+                    "system": "phone",
+                    "value": "{{ msg.emergencyContact.phone }}",
+                    "use": "home"
+                }{% if msg.emergencyContact.email %},{% endif %}
+                {% endif -%}
+                {% if msg.emergencyContact.email -%}
+                {
+                    "system": "email",
+                    "value": "{{ msg.emergencyContact.email }}"
+                }
+                {% endif -%}
+            ]
+            {% endif -%}
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/emergency",
+        "display": "Emergency Care System"
+    }
+}

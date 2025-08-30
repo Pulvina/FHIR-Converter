@@ -1,0 +1,91 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with emergency contact information</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Patient's own contact info {% endcomment -%}
+    "telecom": [
+        {% if msg.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.phone }}",
+            "use": "home",
+            "rank": 1
+        }{% if msg.email %},{% endif %}
+        {% endif -%}
+        {% if msg.email -%}
+        {
+            "system": "email",
+            "value": "{{ msg.email }}",
+            "use": "home",
+            "rank": 1
+        }
+        {% endif -%}
+    ],
+    {% comment -%} Emergency contact information {% endcomment -%}
+    {% if msg.emergencyContact or msg.emergency or msg.contactPerson -%}
+    {% assign emergency = msg.emergencyContact | default: msg.emergency | default: msg.contactPerson -%}
+    "contact": [
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                            "code": "{{ emergency.relationship | default: emergency.relation | default: 'E' }}",
+                            "display": "{{ emergency.relationshipText | default: 'Emergency contact' }}"
+                        }
+                    ]
+                }
+            ],
+            {% if emergency.name or emergency.fullName -%}
+            "name": {
+                "text": "{{ emergency.name | default: emergency.fullName }}"
+            },
+            {% endif -%}
+            {% if emergency.phone or emergency.phoneNumber or emergency.email -%}
+            "telecom": [
+                {% if emergency.phone or emergency.phoneNumber -%}
+                {
+                    "system": "phone",
+                    "value": "{{ emergency.phone | default: emergency.phoneNumber }}",
+                    "use": "home"
+                }{% if emergency.email %},{% endif %}
+                {% endif -%}
+                {% if emergency.email -%}
+                {
+                    "system": "email", 
+                    "value": "{{ emergency.email }}",
+                    "use": "home"
+                }
+                {% endif -%}
+            ]
+            {% endif -%}
+        }
+    ],
+    {% endif -%}
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/emergency-services",
+        "display": "Emergency Contact Healthcare"
+    }
+}

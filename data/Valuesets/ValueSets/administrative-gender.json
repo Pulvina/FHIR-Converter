@@ -1,0 +1,36 @@
+{
+  "administrativeGender": [
+    {
+      "code": "male",
+      "system": "http://hl7.org/fhir/administrative-gender",
+      "display": "Male",
+      "definition": "Male.",
+      "v2Map": "~M icon",
+      "v3Map": "~M icon"
+    },
+    {
+      "code": "female",
+      "system": "http://hl7.org/fhir/administrative-gender",
+      "display": "Female",
+      "definition": "Female.",
+      "v2Map": "~F icon",
+      "v3Map": "~F icon"
+    },
+    {
+      "code": "other",
+      "system": "http://hl7.org/fhir/administrative-gender",
+      "display": "Other",
+      "definition": "Other.",
+      "v2Map": ">A icon (Source concept 'other' is broader than target concept 'Ambiguous' because target concept does not include 'Other'); >O icon (Source concept 'other' is broader than target concept 'Other' because target concept does not include 'Ambiguous')",
+      "v3Map": "<UN icon"
+    },
+    {
+      "code": "unknown",
+      "system": "http://hl7.org/fhir/administrative-gender",
+      "display": "Unknown",
+      "definition": "Unknown.",
+      "v2Map": "~U icon",
+      "v3Map": "~UNK"
+    }
+  ]
+}

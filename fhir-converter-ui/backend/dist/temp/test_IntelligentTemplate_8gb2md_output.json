@@ -1,0 +1,80 @@
+{
+  "Status": "OK",
+  "FhirResource": {
+  "resourceType": "Patient",
+  "id": "954abc69-542d-7e5a-72c4-29be4907a170",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Intelligent Patient Template</div>"
+  },
+  "active": true,
+  "identifier": [
+    {
+      "use": "usual",
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "MR",
+            "display": "Medical record number"
+          }
+        ]
+      },
+      "system": "urn:oid:2.16.840.1.113883.4.1",
+      "value": "HOSP-88342"
+    },
+    {
+      "use": "usual",
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+            "code": "NIIP",
+            "display": "National Insurance Payor Identifier (Payor)"
+          }
+        ]
+      },
+      "system": "urn:oid:2.16.840.1.113883.4.4",
+      "value": "MCB-998877"
+    }
+  ],
+  "name": [
+    {
+      "use": "official",
+      "family": "Cohen",
+      "given": [
+        "David"
+      ]
+    }
+  ],
+  "gender": "male",
+  "birthDate": "1982-09-30",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+972-54-1234567",
+      "use": "home"
+    },
+    {
+      "system": "email",
+      "value": "david.cohen@example.com",
+      "use": "home"
+    }
+  ],
+  "address": [
+    {
+      "use": "home",
+      "line": [
+        "45 Herzl Street"
+      ],
+      "city": "Tel Aviv",
+      "postalCode": "61000",
+      "country": "IL"
+    }
+  ],
+  "managingOrganization": {
+    "reference": "Organization/intelligent-system",
+    "display": "Intelligent Template System"
+  }
+}
+}

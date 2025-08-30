@@ -1,0 +1,17 @@
+{
+  "patients": [
+    {
+      "patientId": 1001,
+      "givenName": "Emma",
+      "familyName": "Thompson",
+      "birthDate": "1988-04-12",
+      "sex": "F",
+      "phoneNumbers": ["555-3001", "555-3002"]
+    }
+  ],
+  "facilityInfo": {
+    "name": "General Hospital",
+    "id": "GH-001"
+  },
+  "timestamp": "2024-01-15T10:30:00Z"
+}

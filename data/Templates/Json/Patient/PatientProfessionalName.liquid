@@ -1,0 +1,71 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">{% if msg.legalName %}Legal Name: {{ msg.legalName }}{% if msg.professionalName %}, Professional Name: {{ msg.professionalName }}{% endif %}{% else %}Patient: {{ msg.firstName }} {{ msg.lastName }}{% endif %}</div>"
+    },
+    "active": true,
+    "name": [
+        {% comment -%} Legal name first (official) {% endcomment -%}
+        {% if msg.legalName or (msg.firstName and msg.lastName) -%}
+        {
+            "use": "official",
+            {% if msg.legalName -%}
+            {% assign legalParts = msg.legalName | split: ' ' -%}
+            {% if legalParts.size >= 2 -%}
+            "family": "{{ legalParts | last }}",
+            "given": [
+                {% assign givenCount = legalParts.size | minus: 1 -%}
+                {% for i in (0..givenCount) -%}
+                {% if i < givenCount -%}
+                "{{ legalParts[i] }}"{% unless i == givenCount | minus: 1 %},{% endunless %}
+                {% endif -%}
+                {% endfor -%}
+            ]
+            {% else -%}
+            "text": "{{ msg.legalName }}"
+            {% endif -%}
+            {% else -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% endif -%}
+        },
+        {% endif -%}
+        {% comment -%} Professional name if different {% endcomment -%}
+        {% if msg.professionalName or msg.businessName -%}
+        {
+            "use": "temp",
+            "text": "{{ msg.professionalName | default: msg.businessName }}",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/humanname-professional",
+                    "valueBoolean": true
+                }
+            ]
+        },
+        {% endif -%}
+        {% comment -%} Stage name or pen name {% endcomment -%}
+        {% if msg.stageName or msg.penName or msg.publicName -%}
+        {
+            "use": "anonymous",
+            "text": "{{ msg.stageName | default: msg.penName | default: msg.publicName }}"
+        }
+        {% endif -%}
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    {% if msg.profession or msg.occupation -%}
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-occupation",
+            "valueString": "{{ msg.profession | default: msg.occupation }}"
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/professional",
+        "display": "Professional Registry"
+    }
+}

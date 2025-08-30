@@ -1,0 +1,10 @@
+{
+  "PatientId": 12345,
+  "firstName": "John",
+  "lastName": "Doe",
+  "dateOfBirth": "1985-03-15",
+  "gender": "M",
+  "phoneNumber": "555-0123",
+  "email": "john.doe@email.com",
+  "address": "123 Main St, Anytown, USA"
+}

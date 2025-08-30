@@ -1,0 +1,118 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.studentId | default: msg.studentNumber | default: msg.universityId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Student ID: {{ msg.studentId | default: msg.studentNumber }}{% if msg.school or msg.university %}, Institution: {{ msg.school | default: msg.university }}{% endif %}{% if msg.program or msg.major %}, Program: {{ msg.program | default: msg.major }}{% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "secondary",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "PI",
+                        "display": "Patient internal identifier"
+                    }
+                ],
+                "text": "Student ID"
+            },
+            {% if msg.school or msg.university or msg.institution -%}
+            "system": "http://{{ msg.school | default: msg.university | default: msg.institution | downcase | replace: ' ', '' }}.edu/student",
+            {% else -%}
+            "system": "http://university.edu/student",
+            {% endif -%}
+            "value": "{{ msg.studentId | default: msg.studentNumber | default: msg.universityId | default: msg.student_id }}",
+            {% if msg.school or msg.university -%}
+            "assigner": {
+                "display": "{{ msg.school | default: msg.university }}"
+            }
+            {% endif -%}
+        }
+    ],
+    "active": {% if msg.enrollmentStatus == "active" or msg.status == "enrolled" -%}true{% else -%}{{ msg.active | default: true }}{% endif -%},
+    {% if msg.studentName or msg.name or msg.firstName or msg.lastName -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.studentName or msg.name -%}
+            "text": "{{ msg.studentName | default: msg.name }}",
+            {% endif -%}
+            {% if msg.firstName or msg.givenName -%}
+            "given": ["{{ msg.firstName | default: msg.givenName }}"],
+            {% endif -%}
+            {% if msg.lastName or msg.familyName -%}
+            "family": "{{ msg.lastName | default: msg.familyName }}"
+            {% endif -%}
+        }
+    ],
+    {% endif -%}
+    {% if msg.dateOfBirth or msg.dob or msg.birthDate -%}
+    "birthDate": "{{ msg.dateOfBirth | default: msg.dob | default: msg.birthDate }}",
+    {% endif -%}
+    {% if msg.studentEmail or msg.email or msg.campusPhone -%}
+    "telecom": [
+        {% if msg.studentEmail or msg.email -%}
+        {
+            "system": "email",
+            "value": "{{ msg.studentEmail | default: msg.email }}",
+            "use": "work"
+        }{% if msg.campusPhone or msg.phone %},{% endif %}
+        {% endif -%}
+        {% if msg.campusPhone or msg.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.campusPhone | default: msg.phone }}"
+        }
+        {% endif -%}
+    ],
+    {% endif -%}
+    {% comment -%} Student details extension {% endcomment -%}
+    {% if msg.program or msg.major or msg.year or msg.enrollmentDate or msg.graduationDate -%}
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-student",
+            "extension": [
+                {% if msg.program or msg.major -%}
+                {
+                    "url": "program",
+                    "valueString": "{{ msg.program | default: msg.major }}"
+                },
+                {% endif -%}
+                {% if msg.year or msg.academicYear -%}
+                {
+                    "url": "academic-year",
+                    "valueString": "{{ msg.year | default: msg.academicYear }}"
+                },
+                {% endif -%}
+                {% if msg.enrollmentDate -%}
+                {
+                    "url": "enrollment-date",
+                    "valueDate": "{{ msg.enrollmentDate }}"
+                },
+                {% endif -%}
+                {% if msg.graduationDate or msg.expectedGraduation -%}
+                {
+                    "url": "graduation-date",
+                    "valueDate": "{{ msg.graduationDate | default: msg.expectedGraduation }}"
+                }
+                {% endif -%}
+            ]
+        }
+    ],
+    {% endif -%}
+    {% if msg.dormitory or msg.residence or msg.campusAddress -%}
+    "address": [
+        {
+            "use": "temp",
+            "type": "physical",
+            "text": "{{ msg.dormitory | default: msg.residence | default: msg.campusAddress }}"
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/educational",
+        "display": "{{ msg.school | default: msg.university | default: 'Educational Institution' }}"
+    }
+}

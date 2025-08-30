@@ -1,0 +1,24 @@
+{
+  "addressType": [
+    {
+      "code": "postal",
+      "system": "http://hl7.org/fhir/address-type",
+      "display": "Postal",
+      "definition": "Mailing addresses - PO Boxes and care-of addresses.",
+      "v3Map": "~PST icon"
+    },
+    {
+      "code": "physical",
+      "system": "http://hl7.org/fhir/address-type",
+      "display": "Physical",
+      "definition": "A physical address that can be visited.",
+      "v3Map": "~PHYS icon"
+    },
+    {
+      "code": "both",
+      "system": "http://hl7.org/fhir/address-type",
+      "display": "Postal & Physical",
+      "definition": "An address that is both physical and postal."
+    }
+  ]
+}

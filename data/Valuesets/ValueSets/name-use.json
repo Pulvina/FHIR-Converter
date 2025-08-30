@@ -1,0 +1,67 @@
+{
+  "nameUse": [
+    {
+      "level": 1,
+      "code": "usual",
+      "system": "http://hl7.org/fhir/name-use",
+      "display": "Usual",
+      "definition": "Known as/conventional/the one you normally use.",
+      "v2Map": "~D icon",
+      "v3Map": "~C icon"
+    },
+    {
+      "level": 1,
+      "code": "official",
+      "system": "http://hl7.org/fhir/name-use",
+      "display": "Official",
+      "definition": "The formal name as registered in an official (government) registry, but which name might not be commonly used. May be called \"legal name\".",
+      "v2Map": "~L icon",
+      "v3Map": "~OR icon"
+    },
+    {
+      "level": 1,
+      "code": "temp",
+      "system": "http://hl7.org/fhir/name-use",
+      "display": "Temp",
+      "definition": "A temporary name. Name.period can provide more detailed information. This may also be used for temporary names assigned at birth or in emergency situations.",
+      "v2Map": "~TEMP icon",
+      "v3Map": "~T icon"
+    },
+    {
+      "level": 1,
+      "code": "nickname",
+      "system": "http://hl7.org/fhir/name-use",
+      "display": "Nickname",
+      "definition": "A name that is used to address the person in an informal manner, but is not part of their formal or usual name.",
+      "v2Map": "~N icon",
+      "v3Map": "~P icon"
+    },
+    {
+      "level": 1,
+      "code": "anonymous",
+      "system": "http://hl7.org/fhir/name-use",
+      "display": "Anonymous",
+      "definition": "Anonymous assigned name, alias, or pseudonym (used to protect a person's identity for privacy reasons).",
+      "v2Map": "~S icon",
+      "v3Map": "~ANON icon"
+    },
+    {
+      "level": 1,
+      "code": "old",
+      "system": "http://hl7.org/fhir/name-use",
+      "display": "Old",
+      "definition": "This name is no longer in use (or was never correct, but retained for records).",
+      "v2Map": ">NOUSE icon(No Use Addresses are considered to be old records); >BAD icon(bad addresses are old records)",
+      "v3Map": "~OLD icon"
+    },
+    {
+      "level": 2,
+      "code": "maiden",
+      "system": "http://hl7.org/fhir/name-use",
+      "display": "Name changed for Marriage",
+      "definition": "A name used prior to changing name because of marriage. This name use is for use by applications that collect and store names that were used prior to a marriage. Marriage naming customs vary greatly around the world, and are constantly changing. This term is not gender specific. The use of this term does not imply any particular history for a person's name.",
+      "v2Map": "~M icon",
+      "v3Map": "~M"
+    }
+  ]
+}

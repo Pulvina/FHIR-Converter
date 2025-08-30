@@ -1,0 +1,63 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with nested address structure</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Nested address structure handling {% endcomment -%}
+    "address": [
+        {
+            "use": "{{ msg.addressInfo.type | default: msg.personalInfo.address.type | default: msg.demographics.address.use | default: 'home' | downcase }}",
+            {% comment -%} Handle various nested address structures {% endcomment -%}
+            {% assign street = msg.addressInfo.street | default: msg.personalInfo.address.street | default: msg.demographics.address.line1 | default: msg.location.address.street -%}
+            {% assign street2 = msg.addressInfo.street2 | default: msg.personalInfo.address.line2 | default: msg.demographics.address.line2 | default: msg.location.address.apt -%}
+            {% if street -%}
+            "line": [
+                "{{ street }}"
+                {% if street2 -%}
+                ,"{{ street2 }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% assign city = msg.addressInfo.city | default: msg.personalInfo.address.city | default: msg.demographics.address.city | default: msg.location.address.city -%}
+            {% if city -%}
+            "city": "{{ city }}",
+            {% endif -%}
+            {% assign state = msg.addressInfo.state | default: msg.personalInfo.address.state | default: msg.demographics.address.state | default: msg.location.address.state -%}
+            {% if state -%}
+            "state": "{{ state }}",
+            {% endif -%}
+            {% assign postal = msg.addressInfo.zip | default: msg.personalInfo.address.zip | default: msg.demographics.address.postalCode | default: msg.location.address.zipCode -%}
+            {% if postal -%}
+            "postalCode": "{{ postal }}",
+            {% endif -%}
+            {% assign country = msg.addressInfo.country | default: msg.personalInfo.address.country | default: msg.demographics.address.country | default: msg.location.address.country -%}
+            {% if country -%}
+            "country": "{{ country }}"
+            {% endif -%}
+        }
+    ],
+    {% if msg.birthDate or msg.dob or msg.personalInfo.birthDate -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob | default: msg.personalInfo.birthDate }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/nested-address",
+        "display": "Nested Address Healthcare System"
+    }
+}

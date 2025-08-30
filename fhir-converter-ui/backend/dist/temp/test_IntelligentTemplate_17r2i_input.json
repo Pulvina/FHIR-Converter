@@ -1,0 +1,60 @@
+{
+  "patientId": "PX-4421",
+  "active": true,
+  "identifiers": [
+    {
+      "type": "MRN",
+      "value": "MR-2025001"
+    },
+    {
+      "type": "NationalID",
+      "value": "987654321"
+    }
+  ],
+  "name": {
+    "first": "Hadas",
+    "middle": "Rina",
+    "last": "Klein",
+    "prefix": "Dr.",
+    "suffix": "PhD"
+  },
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+972-50-9988776",
+      "use": "mobile"
+    },
+    {
+      "system": "email",
+      "value": "hadas.k@example.com",
+      "use": "home"
+    }
+  ],
+  "gender": "female",
+  "birthDate": "1988-11-22",
+  "deceased": false,
+  "address": [
+    {
+      "line1": "14 Palmach St",
+      "city": "Haifa",
+      "postalCode": "33261",
+      "country": "IL"
+    }
+  ],
+  "maritalStatus": "married",
+  "multipleBirth": 2,
+  "photo": [
+    {
+      "url": "https://randomuser.me/api/portraits/women/45.jpg",
+      "description": "Profile photo"
+    }
+  ],
+  "generalPractitioner": {
+    "id": "GP-9001",
+    "name": "Dr. Yonatan Shalev"
+  },
+  "managingOrganization": {
+    "id": "Org-45",
+    "name": "Clalit Health Services"
+  }
+}

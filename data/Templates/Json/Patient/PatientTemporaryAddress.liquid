@@ -1,0 +1,95 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with temporary address</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Temporary address handling {% endcomment -%}
+    "address": [
+        {
+            "use": "temp",
+            {% if msg.temporaryAddress -%}
+            {% assign tempAddr = msg.temporaryAddress -%}
+            {% elsif msg.currentAddress -%}
+            {% assign tempAddr = msg.currentAddress -%}
+            {% endif -%}
+            {% comment -%} Temporary address lines {% endcomment -%}
+            {% if tempAddr.street or tempAddr.address or msg.temporaryStreet -%}
+            "line": [
+                "{{ tempAddr.street | default: tempAddr.address | default: msg.temporaryStreet }}"
+                {% if tempAddr.line2 or msg.temporaryLine2 -%}
+                ,"{{ tempAddr.line2 | default: msg.temporaryLine2 }}"
+                {% endif -%}
+            ],
+            {% elsif msg.hotelName or msg.shelterName -%}
+            "line": [
+                "{{ msg.hotelName | default: msg.shelterName }}"
+                {% if msg.roomNumber -%}
+                ,"Room {{ msg.roomNumber }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if tempAddr.city or msg.temporaryCity -%}
+            "city": "{{ tempAddr.city | default: msg.temporaryCity }}",
+            {% endif -%}
+            {% if tempAddr.state or msg.temporaryState -%}
+            "state": "{{ tempAddr.state | default: msg.temporaryState }}",
+            {% endif -%}
+            {% if tempAddr.zip or tempAddr.postalCode or msg.temporaryZip -%}
+            "postalCode": "{{ tempAddr.zip | default: tempAddr.postalCode | default: msg.temporaryZip }}",
+            {% endif -%}
+            {% if tempAddr.country or msg.temporaryCountry -%}
+            "country": "{{ tempAddr.country | default: msg.temporaryCountry }}",
+            {% endif -%}
+            {% comment -%} Temporary address period {% endcomment -%}
+            {% if msg.startDate or msg.endDate or msg.duration -%}
+            "period": {
+                {% if msg.startDate -%}
+                "start": "{{ msg.startDate }}",
+                {% endif -%}
+                {% if msg.endDate -%}
+                "end": "{{ msg.endDate }}"
+                {% endif -%}
+            },
+            {% endif -%}
+            {% comment -%} Temporary address extensions {% endcomment -%}
+            "extension": [
+                {% if msg.reason or msg.temporaryReason -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/address-reason",
+                    "valueString": "{{ msg.reason | default: msg.temporaryReason }}"
+                },
+                {% endif -%}
+                {% if msg.contactPerson -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/address-contact",
+                    "valueString": "{{ msg.contactPerson }}"
+                }
+                {% endif -%}
+            ]
+        }
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/temporary-housing",
+        "display": "Temporary Housing Healthcare"
+    }
+}

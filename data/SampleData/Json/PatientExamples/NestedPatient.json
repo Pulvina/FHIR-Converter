@@ -1,0 +1,23 @@
+{
+  "patient": {
+    "id": 67890,
+    "name": {
+      "first": "Jane",
+      "last": "Smith"
+    },
+    "demographics": {
+      "birthDate": "1990-07-22",
+      "gender": "F"
+    },
+    "contact": {
+      "phone": ["555-1234", "555-5678"],
+      "email": "jane.smith@email.com",
+      "address": {
+        "street": "456 Oak Avenue",
+        "city": "Springfield",
+        "state": "IL",
+        "zipCode": "62701"
+      }
+    }
+  }
+}

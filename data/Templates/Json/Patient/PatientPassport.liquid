@@ -1,0 +1,67 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.passportNumber | default: msg.passport | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient Passport: {{ msg.passportNumber | default: msg.passport }}{% if msg.nationality or msg.country %}, Country: {{ msg.nationality | default: msg.country }}{% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "official",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "PPN",
+                        "display": "Passport number"
+                    }
+                ]
+            },
+            {% if msg.passportCountry or msg.nationality or msg.country -%}
+            "system": "http://hl7.org/fhir/sid/passport-{{ msg.passportCountry | default: msg.nationality | default: msg.country | downcase }}",
+            {% else -%}
+            "system": "http://hl7.org/fhir/sid/passport",
+            {% endif -%}
+            "value": "{{ msg.passportNumber | default: msg.passport | default: msg.passport_number }}"
+        }
+    ],
+    "active": true,
+    {% if msg.name or msg.fullName or msg.givenNames or msg.surname -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.fullName or msg.name -%}
+            "text": "{{ msg.fullName | default: msg.name }}",
+            {% endif -%}
+            {% if msg.givenNames -%}
+            "given": ["{{ msg.givenNames }}"],
+            {% endif -%}
+            {% if msg.surname -%}
+            "family": "{{ msg.surname }}"
+            {% endif -%}
+        }
+    ],
+    {% endif -%}
+    {% if msg.dateOfBirth or msg.dob or msg.birthDate -%}
+    "birthDate": "{{ msg.dateOfBirth | default: msg.dob | default: msg.birthDate }}",
+    {% endif -%}
+    {% if msg.nationality or msg.country -%}
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-nationality",
+            "extension": [
+                {
+                    "url": "code",
+                    "valueCodeableConcept": {
+                        "text": "{{ msg.nationality | default: msg.country }}"
+                    }
+                }
+            ]
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/immigration",
+        "display": "Immigration Services"
+    }
+}

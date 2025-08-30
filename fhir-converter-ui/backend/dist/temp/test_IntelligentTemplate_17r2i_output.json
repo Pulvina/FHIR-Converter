@@ -1,0 +1,36 @@
+{
+  "Status": "OK",
+  "FhirResource": {
+  "resourceType": "Patient",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">FHIR-Structured Patient Data</div>"
+  },
+  "active": true,
+  "gender": "female",
+  "birthDate": "1988-11-22",
+  "telecom": [
+    {
+      "system": "phone",
+      "value": "+972-50-9988776",
+      "use": "mobile"
+    },
+    {
+      "system": "email",
+      "value": "hadas.k@example.com",
+      "use": "home"
+    }
+  ],
+  "address": [
+    {
+      "city": "Haifa",
+      "postalCode": "33261",
+      "country": "IL"
+    }
+  ],
+  "managingOrganization": {
+    "reference": "Organization/fhir-passthrough",
+    "display": "FHIR Passthrough System"
+  }
+}
+}

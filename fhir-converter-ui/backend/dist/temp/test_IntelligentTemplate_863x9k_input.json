@@ -1,0 +1,65 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "Patient",
+        "id": "pat-777",
+        "name": [
+          {
+            "family": "Smith",
+            "given": [
+              "John",
+              "Michael"
+            ]
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1975-11-05"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Condition",
+        "id": "cond-123",
+        "subject": {
+          "reference": "Patient/pat-777"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "44054006",
+              "display": "Diabetes mellitus type 2"
+            }
+          ]
+        },
+        "onsetDateTime": "2010-06-01"
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "Observation",
+        "id": "obs-222",
+        "subject": {
+          "reference": "Patient/pat-777"
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2093-3",
+              "display": "Cholesterol, Total"
+            }
+          ]
+        },
+        "valueQuantity": {
+          "value": 220,
+          "unit": "mg/dL"
+        },
+        "effectiveDateTime": "2025-07-15"
+      }
+    }
+  ]
+}

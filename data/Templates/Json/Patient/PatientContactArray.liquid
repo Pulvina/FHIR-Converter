@@ -1,0 +1,80 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with contact array</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Handle contact information as arrays {% endcomment -%}
+    "telecom": [
+        {% comment -%} Phone numbers array {% endcomment -%}
+        {% if msg.phoneNumbers -%}
+        {% for phone in msg.phoneNumbers -%}
+        {
+            "system": "phone",
+            {% if phone.number -%}
+            "value": "{{ phone.number }}",
+            {% elsif phone.value -%}
+            "value": "{{ phone.value }}",
+            {% else -%}
+            "value": "{{ phone }}",
+            {% endif -%}
+            "use": "{{ phone.type | default: phone.use | default: 'home' | downcase }}",
+            "rank": {{ forloop.index }}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+        {% endif -%}
+        {% comment -%} Emails array {% endcomment -%}
+        {% if msg.emails -%}
+        {% if msg.phoneNumbers %},{% endif %}
+        {% for email in msg.emails -%}
+        {
+            "system": "email",
+            {% if email.address -%}
+            "value": "{{ email.address }}",
+            {% elsif email.value -%}
+            "value": "{{ email.value }}",
+            {% else -%}
+            "value": "{{ email }}",
+            {% endif -%}
+            "use": "{{ email.type | default: email.use | default: 'home' | downcase }}",
+            "rank": {{ forloop.index }}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+        {% endif -%}
+        {% comment -%} General contacts array {% endcomment -%}
+        {% if msg.contacts -%}
+        {% if msg.phoneNumbers or msg.emails %},{% endif %}
+        {% for contact in msg.contacts -%}
+        {
+            "system": "{{ contact.system | default: contact.type | default: 'phone' }}",
+            "value": "{{ contact.value | default: contact.number | default: contact.address }}",
+            "use": "{{ contact.use | default: 'home' | downcase }}",
+            "rank": {{ forloop.index }}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+        {% endif -%}
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/contact-arrays",
+        "display": "Multi-Contact Array System"
+    }
+}

@@ -1,0 +1,45 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.ssn | default: msg.SSN | default: msg.socialSecurityNumber | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient SSN: {{ msg.ssn | default: msg.SSN | default: msg.socialSecurityNumber | slice: -4, 4 }}{% if msg.fullName or msg.name %}, Name: {{ msg.fullName | default: msg.name }}{% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "official",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "SS",
+                        "display": "Social Security number"
+                    }
+                ]
+            },
+            "system": "http://hl7.org/fhir/sid/us-ssn",
+            "value": "{{ msg.ssn | default: msg.SSN | default: msg.socialSecurityNumber | default: msg.social_security_number }}"
+        }
+    ],
+    "active": true,
+    {% if msg.fullName or msg.name or msg.firstName or msg.lastName -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.fullName or msg.name -%}
+            "text": "{{ msg.fullName | default: msg.name }}",
+            {% endif -%}
+            {% if msg.firstName -%}
+            "given": ["{{ msg.firstName }}"],
+            {% endif -%}
+            {% if msg.lastName -%}
+            "family": "{{ msg.lastName }}"
+            {% endif -%}
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/government",
+        "display": "Government Registry"
+    }
+}

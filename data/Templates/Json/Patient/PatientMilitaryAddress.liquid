@@ -1,0 +1,96 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with military address</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Military address handling {% endcomment -%}
+    "address": [
+        {
+            "use": "{{ msg.addressType | default: 'work' | downcase }}",
+            "type": "physical",
+            {% comment -%} Military address lines {% endcomment -%}
+            {% if msg.unit or msg.building or msg.barracks -%}
+            "line": [
+                {% if msg.unit -%}
+                "Unit {{ msg.unit }}"
+                {% elsif msg.building -%}
+                "Building {{ msg.building }}"
+                {% elsif msg.barracks -%}
+                "{{ msg.barracks }}"
+                {% endif -%}
+                {% if msg.addressLine2 or msg.room -%}
+                ,"{{ msg.addressLine2 | default: msg.room }}"
+                {% endif -%}
+            ],
+            {% elsif msg.street or msg.baseAddress -%}
+            "line": [
+                "{{ msg.street | default: msg.baseAddress }}"
+                {% if msg.addressLine2 -%}
+                ,"{{ msg.addressLine2 }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if msg.baseName or msg.installation -%}
+            "city": "{{ msg.baseName | default: msg.installation }}",
+            {% elsif msg.city -%}
+            "city": "{{ msg.city }}",
+            {% endif -%}
+            {% comment -%} Military state codes (AA, AE, AP for overseas) {% endcomment -%}
+            {% if msg.state or msg.militaryState -%}
+            {% assign milState = msg.state | default: msg.militaryState | upcase -%}
+            "state": "{{ milState }}",
+            {% endif -%}
+            {% if msg.zip or msg.zipCode or msg.apo or msg.fpo -%}
+            "postalCode": "{{ msg.zip | default: msg.zipCode | default: msg.apo | default: msg.fpo }}",
+            {% endif -%}
+            {% if msg.country -%}
+            "country": "{{ msg.country }}",
+            {% endif -%}
+            {% comment -%} Military-specific extensions {% endcomment -%}
+            "extension": [
+                {% if msg.branch or msg.militaryBranch -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/patient-military-service",
+                    "valueString": "{{ msg.branch | default: msg.militaryBranch }}"
+                },
+                {% endif -%}
+                {% if msg.rank or msg.militaryRank -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/patient-rank",
+                    "valueString": "{{ msg.rank | default: msg.militaryRank }}"
+                },
+                {% endif -%}
+                {% if msg.deployment or msg.overseas -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/address-deployment",
+                    "valueBoolean": true
+                }
+                {% endif -%}
+            ]
+        }
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/military-health",
+        "display": "Military Health System"
+    }
+}

@@ -1,0 +1,25 @@
+{
+  "Status": "OK",
+  "FhirResource": {
+  "resourceType": "Patient",
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Intelligent Patient Template</div>"
+  },
+  "active": true,
+  "gender": "female",
+  "birthDate": "1996-01-01",
+  "_birthDate": {
+    "extension": [
+      {
+        "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime-estimated",
+        "valueBoolean": true
+      }
+    ]
+  },
+  "managingOrganization": {
+    "reference": "Organization/intelligent-system",
+    "display": "Intelligent Template System"
+  }
+}
+}

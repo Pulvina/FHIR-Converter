@@ -1,0 +1,27 @@
+{
+  "patientId": "P-99021",
+  "name": {
+    "first": "Maria",
+    "last": "Gonzalez"
+  },
+  "dateOfBirth": "1978-03-12",
+  "gender": "female",
+  "addresses": [
+    {
+      "type": "home",
+      "line1": "123 Calle Mayor",
+      "city": "Madrid",
+      "country": "ES"
+    },
+    {
+      "type": "temporary",
+      "line1": "45 King St",
+      "city": "Toronto",
+      "country": "CA"
+    }
+  ],
+  "languages": [
+    "Spanish",
+    "English"
+  ]
+}

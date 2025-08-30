@@ -1,0 +1,118 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Intelligent Patient Template</div>"
+    },
+    "active": true,
+    {% if msg.patient.sex -%}
+    "gender": {% assign g = msg.patient.sex | downcase -%}
+        {% case g -%}
+            {% when 'm' -%}"male"
+            {% when 'male' -%}"male"
+            {% when 'man' -%}"male"
+            {% when 'f' -%}"female"
+            {% when 'female' -%}"female"
+            {% when 'woman' -%}"female"
+            {% when 'o' -%}"other"
+            {% when 'other' -%}"other"
+            {% when 'u' -%}"unknown"
+            {% when 'unknown' -%}"unknown"
+            {% when 'n/a' -%}"unknown"
+            {% else -%}"unknown"
+        {% endcase -%},
+    {% endif -%}
+    {% if msg.patient.ageEstimate -%}
+    {% assign age = msg.patient.ageEstimate -%}
+    {% assign birthYear = 2025 | minus: age -%}
+    "birthDate": "{{ birthYear }}-01-01",
+    "_birthDate": {
+        "extension": [{
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime-estimated",
+            "valueBoolean": true
+        }]
+    },
+    {% endif -%}
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-vitals",
+            "extension": [
+                {% if msg.vitals -%}
+                {
+                    "url": "vitals",
+                    "valueString": "{{ msg.vitals }}"
+                },
+                {% endif -%}
+                {% if msg.vitals.heartRate -%}
+                {
+                    "url": "heartRate",
+                    "valueQuantity": {
+                        "value": {{ msg.vitals.heartRate }},
+                        "code": "8867-4",
+                        "system": "http://loinc.org"
+                    }
+                },
+                {% endif -%}
+                {% if msg.vitals.respiratoryRate -%}
+                {
+                    "url": "respiratoryRate",
+                    "valueQuantity": {
+                        "value": {{ msg.vitals.respiratoryRate }},
+                        "code": "9279-1",
+                        "system": "http://loinc.org"
+                    }
+                },
+                {% endif -%}
+                {% if msg.vitals.bloodPressure -%}
+                {
+                    "url": "bloodPressure",
+                    "valueQuantity": {
+                        "value": {{ msg.vitals.bloodPressure }},
+                        "code": "85354-9",
+                        "system": "http://loinc.org"
+                    }
+                },
+                {% endif -%}
+                {% if msg.vitals.oxygenSaturation -%}
+                {
+                    "url": "oxygenSaturation",
+                    "valueQuantity": {
+                        "value": {{ msg.vitals.oxygenSaturation }},
+                        "code": "2708-6",
+                        "system": "http://loinc.org"
+                    }
+                }
+                {% endif -%}
+            ]
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-emergency",
+            "valueString": "{{ msg.caseId }}"
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-emergency",
+            "valueString": "{{ msg.patient.unidentified }}"
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-emergency",
+            "valueString": "{{ msg.incidentLocation }}"
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-emergency",
+            "valueString": "{{ msg.incidentLocation.lat }}"
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-emergency",
+            "valueString": "{{ msg.incidentLocation.lng }}"
+        },
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-emergency",
+            "valueString": "{{ msg.transportedTo }}"
+        }
+    ],
+    "managingOrganization": {
+        "reference": "Organization/intelligent-system",
+        "display": "Intelligent Template System"
+    }
+}

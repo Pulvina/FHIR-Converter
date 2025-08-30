@@ -1,0 +1,39 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Intelligent Patient Template</div>"
+    },
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "text": "{{ msg.patientDetails.fullName }}"
+        }
+    ],
+    {% if msg.patientDetails.sex -%}
+    "gender": {% assign g = msg.patientDetails.sex | downcase -%}
+        {% case g -%}
+            {% when 'm' -%}"male"
+            {% when 'male' -%}"male"
+            {% when 'man' -%}"male"
+            {% when 'f' -%}"female"
+            {% when 'female' -%}"female"
+            {% when 'woman' -%}"female"
+            {% when 'o' -%}"other"
+            {% when 'other' -%}"other"
+            {% when 'u' -%}"unknown"
+            {% when 'unknown' -%}"unknown"
+            {% when 'n/a' -%}"unknown"
+            {% else -%}"unknown"
+        {% endcase -%},
+    {% endif -%}
+    {% if msg.patientDetails.dob -%}
+    "birthDate": "{{ msg.patientDetails.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/intelligent-system",
+        "display": "Intelligent Template System"
+    }
+}

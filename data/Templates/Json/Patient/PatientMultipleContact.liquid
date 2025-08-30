@@ -1,0 +1,100 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with multiple contact methods</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Multiple contact methods {% endcomment -%}
+    "telecom": [
+        {% if msg.mobilePhone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.mobilePhone }}",
+            "use": "mobile",
+            "rank": 1
+        },
+        {% endif -%}
+        {% if msg.homePhone -%}
+        {
+            "system": "phone", 
+            "value": "{{ msg.homePhone }}",
+            "use": "home",
+            "rank": 2
+        },
+        {% endif -%}
+        {% if msg.workPhone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.workPhone }}",
+            "use": "work",
+            "rank": 3
+        },
+        {% endif -%}
+        {% if msg.personalEmail -%}
+        {
+            "system": "email",
+            "value": "{{ msg.personalEmail }}",
+            "use": "home",
+            "rank": 1
+        },
+        {% endif -%}
+        {% if msg.workEmail -%}
+        {
+            "system": "email",
+            "value": "{{ msg.workEmail }}",
+            "use": "work",
+            "rank": 2
+        },
+        {% endif -%}
+        {% if msg.fax -%}
+        {
+            "system": "fax",
+            "value": "{{ msg.fax }}",
+            "use": "work"
+        },
+        {% endif -%}
+        {% if msg.website or msg.url -%}
+        {
+            "system": "url",
+            "value": "{{ msg.website | default: msg.url }}",
+            "use": "home"
+        },
+        {% endif -%}
+        {% if msg.emergencyPhone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.emergencyPhone }}",
+            "use": "mobile",
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/contactpoint-comment",
+                    "valueString": "Emergency contact"
+                }
+            ]
+        }
+        {% endif -%}
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/multi-contact",
+        "display": "Multi-Contact Healthcare System"
+    }
+}

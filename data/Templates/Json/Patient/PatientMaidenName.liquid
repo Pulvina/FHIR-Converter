@@ -1,0 +1,84 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient: {{ msg.firstName | default: msg.givenName }} {{ msg.lastName | default: msg.currentLastName }}{% if msg.maidenName %} (née {{ msg.maidenName }}){% endif %}</div>"
+    },
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            {% if msg.lastName or msg.currentLastName or msg.marriedName -%}
+            "family": "{{ msg.lastName | default: msg.currentLastName | default: msg.marriedName }}",
+            {% endif -%}
+            {% if msg.firstName or msg.givenName -%}
+            "given": [
+                "{{ msg.firstName | default: msg.givenName }}"
+                {% if msg.middleName -%}
+                ,"{{ msg.middleName }}"
+                {% endif -%}
+            ]
+            {% endif -%}
+        }{% if msg.maidenName or msg.birthName %},{% endif %}
+        {% if msg.maidenName or msg.birthName -%}
+        {
+            "use": "maiden",
+            "family": "{{ msg.maidenName | default: msg.birthName }}",
+            {% if msg.firstName or msg.givenName -%}
+            "given": [
+                "{{ msg.firstName | default: msg.givenName }}"
+                {% if msg.middleName -%}
+                ,"{{ msg.middleName }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if msg.maidenNamePeriod or msg.birthNamePeriod -%}
+            "period": {
+                {% if msg.maidenNamePeriod.start or msg.birthNamePeriod.start -%}
+                "start": "{{ msg.maidenNamePeriod.start | default: msg.birthNamePeriod.start }}",
+                {% endif -%}
+                {% if msg.maidenNamePeriod.end or msg.birthNamePeriod.end -%}
+                "end": "{{ msg.maidenNamePeriod.end | default: msg.birthNamePeriod.end }}"
+                {% endif -%}
+            }
+            {% endif -%}
+        }
+        {% endif -%}
+    ],
+    {% if msg.birthDate or msg.dob or msg.dateOfBirth -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob | default: msg.dateOfBirth }}",
+    {% endif -%}
+    {% if msg.gender or msg.sex -%}
+    "gender": {% assign g = msg.gender | default: msg.sex | downcase -%}
+        {% if g == 'male' or g == 'm' -%}"male"
+        {% elsif g == 'female' or g == 'f' -%}"female"
+        {% elsif g == 'other' or g == 'o' -%}"other"
+        {% else -%}"unknown"
+        {% endif -%},
+    {% endif -%}
+    {% comment -%} Add marriage information if available {% endcomment -%}
+    {% if msg.marriageDate or msg.marriageStatus -%}
+    "maritalStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+                "code": "{% if msg.marriageStatus == 'married' or msg.marriageStatus == 'Married' -%}M{% elsif msg.marriageStatus == 'divorced' or msg.marriageStatus == 'Divorced' -%}D{% elsif msg.marriageStatus == 'widowed' or msg.marriageStatus == 'Widowed' -%}W{% else -%}M{% endif %}",
+                "display": "{{ msg.marriageStatus | default: 'Married' | capitalize }}"
+            }
+        ]
+    },
+    {% endif -%}
+    {% if msg.marriageDate -%}
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-marriage-date",
+            "valueDate": "{{ msg.marriageDate }}"
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/civil-registry",
+        "display": "Civil Registry"
+    }
+}

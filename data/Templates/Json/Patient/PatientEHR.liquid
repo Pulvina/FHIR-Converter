@@ -1,0 +1,123 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.mrn | default: msg.MRN | default: msg.medicalRecordNumber | to_json_string | generate_uuid }}",
+    {% comment -%} Generate narrative text for FHIR compliance {% endcomment -%}
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient {{ msg.demographics.firstName | default: msg.name.first | default: msg.patientName.first }} {{ msg.demographics.lastName | default: msg.name.last | default: msg.patientName.last }}{% if msg.demographics.dateOfBirth or msg.demographics.dob %}, DOB: {{ msg.demographics.dateOfBirth | default: msg.demographics.dob }}{% endif %}{% if msg.demographics.gender or msg.demographics.sex %}, Gender: {{ msg.demographics.gender | default: msg.demographics.sex }}{% endif %}, MRN: {{ msg.mrn | default: msg.MRN | default: msg.medicalRecordNumber }}</div>"
+    },
+    {% comment -%} Handle multiple identifiers from EHR systems {% endcomment -%}
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical Record Number"
+                    }
+                ]
+            },
+            "system": "urn:oid:2.16.840.1.113883.19.5",
+            "value": "{{ msg.mrn | default: msg.MRN | default: msg.medicalRecordNumber }}"
+        }{% if msg.identifiers.size > 0 -%}
+        {% for identifier in msg.identifiers -%}
+        ,{
+            "use": "secondary",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "{% if identifier.type %}{{ identifier.type }}{% else %}MISC{% endif %}",
+                        "display": "{% if identifier.type %}{{ identifier.type }}{% else %}Miscellaneous Identifier{% endif %}"
+                    }
+                ]
+            },
+            "value": "{% if identifier.value %}{{ identifier.value }}{% else %}{{ identifier }}{% endif %}"
+        }
+        {% endfor -%}
+        {% endif -%}
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "{{ msg.demographics.lastName | default: msg.name.last | default: msg.patientName.last }}",
+            "given": [
+                "{{ msg.demographics.firstName | default: msg.name.first | default: msg.patientName.first }}"
+            ]
+        }
+    ],
+    {% comment -%} Handle EHR contact information {% endcomment -%}
+    {% if msg.contactInfo.primaryPhone or msg.contactInfo.email or msg.demographics.phone or msg.demographics.email -%}
+    "telecom": [
+        {% if msg.contactInfo.primaryPhone or msg.demographics.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.contactInfo.primaryPhone | default: msg.demographics.phone }}",
+            "use": "home",
+            "rank": 1
+        }{% if msg.contactInfo.email or msg.demographics.email %},{% endif %}
+        {% endif -%}
+        {% if msg.contactInfo.email or msg.demographics.email -%}
+        {
+            "system": "email",
+            "value": "{{ msg.contactInfo.email | default: msg.demographics.email }}"
+        }
+        {% endif -%}
+    ],
+    {% endif -%}
+    {% comment -%} Handle gender from demographics section {% endcomment -%}
+    {% if msg.demographics.gender or msg.demographics.sex or msg.personalDetails.gender -%}
+    "gender": {% assign genderValue = msg.demographics.gender | default: msg.demographics.sex | default: msg.personalDetails.gender -%}
+        {% if genderValue == 'M' or genderValue == 'Male' or genderValue == 'male' -%}
+            "male"
+        {% elsif genderValue == 'F' or genderValue == 'Female' or genderValue == 'female' -%}
+            "female"
+        {% elsif genderValue == 'U' or genderValue == 'Unknown' or genderValue == 'unknown' -%}
+            "unknown"
+        {% else -%}
+            "other"
+        {% endif -%},
+    {% endif -%}
+    {% comment -%} Handle birth date from demographics {% endcomment -%}
+    {% if msg.demographics.dateOfBirth or msg.demographics.dob or msg.birthInfo.date -%}
+    "birthDate": "{{ msg.demographics.dateOfBirth | default: msg.demographics.dob | default: msg.birthInfo.date }}",
+    {% endif -%}
+    {% comment -%} Handle marital status if available {% endcomment -%}
+    {% if msg.demographics.maritalStatus or msg.personalDetails.maritalStatus -%}
+    "maritalStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+                "code": "{% assign marital = msg.demographics.maritalStatus | default: msg.personalDetails.maritalStatus -%}
+                    {% if marital == 'married' or marital == 'Married' -%}M{% elsif marital == 'single' or marital == 'Single' -%}S{% elsif marital == 'divorced' or marital == 'Divorced' -%}D{% elsif marital == 'widowed' or marital == 'Widowed' -%}W{% else -%}UNK{% endif %}",
+                "display": "{{ msg.demographics.maritalStatus | default: msg.personalDetails.maritalStatus | capitalize }}"
+            }
+        ]
+    },
+    {% endif -%}
+    {% comment -%} Handle insurance information if available {% endcomment -%}
+    {% if msg.insurance.provider -%}
+    "extension": [
+        {
+            "url": "http://example.org/fhir/StructureDefinition/insurance-info",
+            "extension": [
+                {
+                    "url": "provider",
+                    "valueString": "{{ msg.insurance.provider }}"
+                }{% if msg.insurance.policyNumber %},
+                {
+                    "url": "policyNumber",
+                    "valueString": "{{ msg.insurance.policyNumber }}"
+                }{% endif %}
+            ]
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/2.16.840.1.113883.19.5",
+        "display": "Good Health Clinic"
+    }
+}

@@ -1,0 +1,20 @@
+{
+  "caseId": "EMS-2025-1023",
+  "patient": {
+    "ageEstimate": 45,
+    "sex": "male",
+    "unidentified": true
+  },
+  "vitals": {
+    "heartRate": 110,
+    "respiratoryRate": 22,
+    "bloodPressure": "150/95",
+    "oxygenSaturation": 92
+  },
+  "incidentLocation": {
+    "lat": 32.0853,
+    "lng": 34.7818,
+    "description": "Near Tel Aviv Central Bus Station"
+  },
+  "transportedTo": "Ichilov Hospital"
+}

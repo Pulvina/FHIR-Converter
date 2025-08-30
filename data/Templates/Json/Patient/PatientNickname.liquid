@@ -1,0 +1,39 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient: {{ msg.firstName | default: msg.givenName }} {{ msg.lastName | default: msg.familyName }}{% if msg.nickname or msg.alias %} ({{ msg.nickname | default: msg.alias }}){% endif %}</div>"
+    },
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            {% if msg.lastName or msg.familyName -%}
+            "family": "{{ msg.lastName | default: msg.familyName }}",
+            {% endif -%}
+            {% if msg.firstName or msg.givenName -%}
+            "given": ["{{ msg.firstName | default: msg.givenName }}"]
+            {% endif -%}
+        }{% if msg.nickname or msg.alias or msg.knownAs %},{% endif %}
+        {% if msg.nickname or msg.alias or msg.knownAs -%}
+        {
+            "use": "nickname",
+            {% if msg.nickname -%}
+            "text": "{{ msg.nickname }}"
+            {% elsif msg.alias -%}
+            "text": "{{ msg.alias }}"
+            {% elsif msg.knownAs -%}
+            "text": "{{ msg.knownAs }}"
+            {% endif -%}
+        }
+        {% endif -%}
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/community",
+        "display": "Community Healthcare"
+    }
+}

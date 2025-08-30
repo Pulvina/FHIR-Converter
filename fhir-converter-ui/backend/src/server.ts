@@ -5,9 +5,22 @@ import path from 'path';
 import fs from 'fs-extra';
 import { spawn } from 'child_process';
 import { v4 as uuidv4 } from 'uuid';
+import { ModularTemplateEngine } from './ModularTemplateEngine';
+import { ValuesetService } from './services/ValuesetService';
+import { IntelligentTemplateService } from './services/IntelligentTemplateService';
+import { validationService } from './services/validationService';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Initialize modular template detection engine
+const templateEngine = new ModularTemplateEngine();
+
+// Initialize valueset service
+const valuesetService = ValuesetService.getInstance();
+
+// Initialize intelligent template service
+const intelligentTemplateService = IntelligentTemplateService.getInstance();
 
 app.use(cors());
 app.use(express.json());
@@ -85,13 +98,34 @@ app.get('/api/templates/:inputType', async (req, res) => {
     }
 
     if (await fs.pathExists(templateDir)) {
+      let templates: any[] = [];
+      
+      // Get templates from main directory
       const files = await fs.readdir(templateDir);
-      const templates = files
+      const mainTemplates = files
         .filter(file => file.endsWith('.liquid'))
         .map(file => ({
           name: file,
           displayName: file.replace('.liquid', '').replace(/_/g, ' ')
         }));
+      
+      templates = [...templates, ...mainTemplates];
+      
+      // For JSON templates, also include Patient subfolder
+      if (inputType.toLowerCase() === 'json') {
+        const patientDir = path.join(templateDir, 'Patient');
+        if (await fs.pathExists(patientDir)) {
+          const patientFiles = await fs.readdir(patientDir);
+          const patientTemplates = patientFiles
+            .filter(file => file.endsWith('.liquid'))
+            .map(file => ({
+              name: file,
+              displayName: file.replace('.liquid', '').replace(/_/g, ' ') + ' (Patient)'
+            }));
+          
+          templates = [...templates, ...patientTemplates];
+        }
+      }
       
       res.json({ templates });
     } else {
@@ -131,16 +165,38 @@ app.get('/api/samples/:inputType', async (req, res) => {
     }
 
     if (await fs.pathExists(sampleDir)) {
-      const files = await fs.readdir(sampleDir);
-      const samples = files
-        .filter(file => !file.startsWith('.'))
-        .map(file => ({
-          name: file,
-          displayName: file.replace(/\.(hl7|ccda|json)$/, '').replace(/-/g, ' '),
-          type: getFileDescription(file),
-          size: 0 // We'll add size info if needed
-        }));
+      const samples: any[] = [];
       
+      // Helper function to scan directory recursively
+      const scanDirectory = async (dir: string, prefix: string = '') => {
+        const items = await fs.readdir(dir, { withFileTypes: true });
+        
+        for (const item of items) {
+          if (item.name.startsWith('.')) continue;
+          
+          const itemPath = path.join(dir, item.name);
+          
+          if (item.isDirectory()) {
+            // Recursively scan subdirectories
+            const folderPrefix = prefix ? `${prefix}/${item.name}` : item.name;
+            await scanDirectory(itemPath, folderPrefix);
+          } else if (item.isFile()) {
+            // Add file to samples
+            const fileName = prefix ? `${prefix}/${item.name}` : item.name;
+            const displayName = item.name.replace(/\.(hl7|ccda|json)$/, '').replace(/-/g, ' ');
+            const folderName = prefix ? ` (${prefix})` : '';
+            
+            samples.push({
+              name: fileName,
+              displayName: `${displayName}${folderName}`,
+              type: getFileDescription(item.name),
+              size: 0
+            });
+          }
+        }
+      };
+      
+      await scanDirectory(sampleDir);
       res.json({ samples });
     } else {
       res.json({ samples: [] });
@@ -318,7 +374,43 @@ app.post('/api/convert/text', async (req, res) => {
     // Write input text to temporary file
     await fs.writeFile(tempInputPath, inputText, 'utf8');
 
-    const result = await convertFile(tempInputPath, tempOutputPath, inputType, outputFormat, templateName);
+    // Auto-detect template for JSON input if no template specified
+    let finalTemplateName = templateName;
+    if (!templateName && inputType.toLowerCase() === 'json') {
+      try {
+        const parsedInput = JSON.parse(inputText);
+        
+        // Try intelligent system first
+        console.log('🧠 Attempting intelligent template generation...');
+        const intelligentResult = await intelligentTemplateService.processIntelligentConversion(parsedInput);
+        
+        if (intelligentResult.success && intelligentResult.confidence > 0.6) {
+          console.log(`✨ Intelligent system succeeded with ${(intelligentResult.confidence * 100).toFixed(1)}% confidence`);
+          
+          // Use the intelligent template
+          finalTemplateName = intelligentResult.generatedTemplateName;
+          console.log(`Using intelligent template: ${finalTemplateName}`);
+        } else {
+          console.log(`🔄 Intelligent system failed (${(intelligentResult.confidence * 100).toFixed(1)}% confidence), falling back to static templates...`);
+          
+          // Fallback to static template detection
+          const analysis = templateEngine.selectBestTemplate(parsedInput);
+          
+          console.log(`Template analysis result: ${analysis.selected.templateName} (confidence: ${analysis.selected.confidence}%)`);
+          
+          if (analysis.selected.confidence >= 30) {
+            finalTemplateName = analysis.selected.templateName;
+            console.log(`Auto-selected template: ${finalTemplateName} (confidence: ${analysis.selected.confidence}%)`);
+          } else {
+            console.log(`Confidence too low (${analysis.selected.confidence}%), falling back to ExamplePatient`);
+          }
+        }
+      } catch (error) {
+        console.warn('Failed to auto-detect template:', error);
+      }
+    }
+
+    const result = await convertFile(tempInputPath, tempOutputPath, inputType, outputFormat, finalTemplateName);
     
     res.json(result);
     
@@ -347,6 +439,50 @@ app.post('/api/convert/text', async (req, res) => {
   }
 });
 
+// Template analysis endpoint
+app.post('/api/analyze-template', async (req, res) => {
+  try {
+    const { jsonData } = req.body;
+    
+    if (!jsonData) {
+      return res.status(400).json({ error: 'JSON data is required' });
+    }
+
+    // Parse JSON if it's a string
+    let parsedData = jsonData;
+    if (typeof jsonData === 'string') {
+      try {
+        parsedData = JSON.parse(jsonData);
+      } catch (error) {
+        return res.status(400).json({ error: 'Invalid JSON format' });
+      }
+    }
+
+    // Perform comprehensive modular analysis
+    const fullAnalysis = templateEngine.analyzeJson(parsedData);
+
+    res.json({
+      success: true,
+      analysis: {
+        resourceDetection: fullAnalysis.resourceDetection,
+        selectedResourceType: fullAnalysis.selectedResourceType,
+        structure: fullAnalysis.structureAnalysis,
+        recommendation: fullAnalysis.recommendation,
+        selectedTemplate: fullAnalysis.templateAnalysis?.selected || null,
+        alternativeTemplates: fullAnalysis.templateAnalysis?.alternatives || [],
+        allScores: templateEngine.scoreTemplates(parsedData)
+      }
+    });
+    
+  } catch (error: any) {
+    console.error('Template analysis error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Template analysis failed'
+    });
+  }
+});
+
 async function convertFile(
   inputPath: string, 
   outputPath: string, 
@@ -356,7 +492,7 @@ async function convertFile(
 ): Promise<ConversionResult> {
   return new Promise(async (resolve, reject) => {
     try {
-      // Path to the FHIR Converter CLI tool
+      // Path to the FHIR Converter CLI tool (relative to backend working directory)
       const converterPath = path.resolve('../../src/Microsoft.Health.Fhir.Liquid.Converter.Tool/bin/Debug/net8.0/Microsoft.Health.Fhir.Liquid.Converter.Tool.exe');
       const baseTemplatesPath = path.resolve('../../data/Templates');
       
@@ -370,7 +506,12 @@ async function convertFile(
           templatesPath = path.resolve(baseTemplatesPath, 'Ccda');
           break;
         case 'json':
-          templatesPath = path.resolve(baseTemplatesPath, 'Json');
+          // Use Patient subfolder for Patient resources, otherwise use main Json folder
+          if (templateName && templateName.startsWith('Patient')) {
+            templatesPath = path.resolve(baseTemplatesPath, 'Json', 'Patient');
+          } else {
+            templatesPath = path.resolve(baseTemplatesPath, 'Json');
+          }
           break;
         case 'stu3':
           templatesPath = path.resolve(baseTemplatesPath, 'Stu3ToR4');
@@ -749,6 +890,244 @@ function generateImmunizationNarrative(immunization: any): string {
   return text + '.';
 }
 
+// Intelligent template generation endpoints
+app.post('/api/intelligent/analyze', async (req, res) => {
+  try {
+    const { jsonInput } = req.body;
+    
+    if (!jsonInput) {
+      return res.status(400).json({ error: 'JSON input is required' });
+    }
+
+    const analysis = await intelligentTemplateService.getTemplateAnalysis(jsonInput);
+    res.json(analysis);
+  } catch (error) {
+    console.error('Error in intelligent analysis:', error);
+    res.status(500).json({ error: 'Failed to analyze input structure' });
+  }
+});
+
+app.post('/api/intelligent/convert', async (req, res) => {
+  try {
+    const { jsonInput } = req.body;
+    
+    if (!jsonInput) {
+      return res.status(400).json({ error: 'JSON input is required' });
+    }
+
+    console.log('Processing intelligent conversion for input...');
+    const result = await intelligentTemplateService.processIntelligentConversion(jsonInput);
+    
+    res.json(result);
+  } catch (error) {
+    console.error('Error in intelligent conversion:', error);
+    res.status(500).json({ error: 'Failed to process intelligent conversion' });
+  }
+});
+
+app.get('/api/intelligent/cache-stats', (req, res) => {
+  try {
+    const stats = intelligentTemplateService.getCacheStats();
+    res.json(stats);
+  } catch (error) {
+    console.error('Error getting cache stats:', error);
+    res.status(500).json({ error: 'Failed to get cache statistics' });
+  }
+});
+
+app.delete('/api/intelligent/cleanup', async (req, res) => {
+  try {
+    await intelligentTemplateService.cleanupGeneratedTemplates();
+    res.json({ message: 'Generated templates cleaned up successfully' });
+  } catch (error) {
+    console.error('Error cleaning up templates:', error);
+    res.status(500).json({ error: 'Failed to cleanup generated templates' });
+  }
+});
+
+// Valueset validation endpoints
+app.get('/api/valuesets', (req, res) => {
+  try {
+    const allValidCodes = valuesetService.getAllValidCodes();
+    res.json(allValidCodes);
+  } catch (error) {
+    console.error('Error getting valuesets:', error);
+    res.status(500).json({ error: 'Failed to retrieve valuesets' });
+  }
+});
+
+app.post('/api/validate/gender', (req, res) => {
+  try {
+    const { value } = req.body;
+    const normalized = valuesetService.normalizeGender(value);
+    const isValid = valuesetService.isValidGender(normalized);
+    const display = valuesetService.getGenderDisplay(normalized);
+    
+    res.json({
+      original: value,
+      normalized,
+      isValid,
+      display
+    });
+  } catch (error) {
+    console.error('Error validating gender:', error);
+    res.status(500).json({ error: 'Failed to validate gender' });
+  }
+});
+
+app.post('/api/validate/name-use', (req, res) => {
+  try {
+    const { value } = req.body;
+    const normalized = valuesetService.normalizeNameUse(value);
+    const isValid = valuesetService.isValidNameUse(normalized);
+    const display = valuesetService.getNameUseDisplay(normalized);
+    
+    res.json({
+      original: value,
+      normalized,
+      isValid,
+      display
+    });
+  } catch (error) {
+    console.error('Error validating name use:', error);
+    res.status(500).json({ error: 'Failed to validate name use' });
+  }
+});
+
+app.post('/api/validate/contact-point', (req, res) => {
+  try {
+    const { system, use } = req.body;
+    const normalizedSystem = valuesetService.normalizeContactPointSystem(system);
+    const normalizedUse = valuesetService.normalizeContactPointUse(use);
+    
+    const systemValid = valuesetService.isValidContactPointSystem(normalizedSystem);
+    const useValid = valuesetService.isValidContactPointUse(normalizedUse);
+    
+    const systemDisplay = valuesetService.getContactPointSystemDisplay(normalizedSystem);
+    const useDisplay = valuesetService.getContactPointUseDisplay(normalizedUse);
+    
+    res.json({
+      system: {
+        original: system,
+        normalized: normalizedSystem,
+        isValid: systemValid,
+        display: systemDisplay
+      },
+      use: {
+        original: use,
+        normalized: normalizedUse,
+        isValid: useValid,
+        display: useDisplay
+      }
+    });
+  } catch (error) {
+    console.error('Error validating contact point:', error);
+    res.status(500).json({ error: 'Failed to validate contact point' });
+  }
+});
+
+app.post('/api/validate/address', (req, res) => {
+  try {
+    const { use, type } = req.body;
+    const normalizedUse = valuesetService.normalizeAddressUse(use);
+    const normalizedType = valuesetService.normalizeAddressType(type);
+    
+    const useValid = valuesetService.isValidAddressUse(normalizedUse);
+    const typeValid = valuesetService.isValidAddressType(normalizedType);
+    
+    const useDisplay = valuesetService.getAddressUseDisplay(normalizedUse);
+    const typeDisplay = valuesetService.getAddressTypeDisplay(normalizedType);
+    
+    res.json({
+      use: {
+        original: use,
+        normalized: normalizedUse,
+        isValid: useValid,
+        display: useDisplay
+      },
+      type: {
+        original: type,
+        normalized: normalizedType,
+        isValid: typeValid,
+        display: typeDisplay
+      }
+    });
+  } catch (error) {
+    console.error('Error validating address:', error);
+    res.status(500).json({ error: 'Failed to validate address' });
+  }
+});
+
+// FHIR Validation endpoints
+app.post('/api/validate/resource', async (req, res) => {
+  try {
+    const { resource } = req.body;
+    
+    if (!resource) {
+      return res.status(400).json({ error: 'Resource is required' });
+    }
+
+    const validationResult = await validationService.validateResource(resource);
+    
+    res.json({
+      success: true,
+      validation: validationResult
+    });
+  } catch (error: any) {
+    console.error('Error validating resource:', error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message || 'Failed to validate resource' 
+    });
+  }
+});
+
+app.post('/api/validate/resources', async (req, res) => {
+  try {
+    const { resources } = req.body;
+    
+    if (!resources || !Array.isArray(resources)) {
+      return res.status(400).json({ error: 'Resources array is required' });
+    }
+
+    const validationResults = await validationService.validateResources(resources);
+    
+    res.json({
+      success: true,
+      validations: validationResults
+    });
+  } catch (error: any) {
+    console.error('Error validating resources:', error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message || 'Failed to validate resources' 
+    });
+  }
+});
+
+app.post('/api/validate/bundle', async (req, res) => {
+  try {
+    const { bundle } = req.body;
+    
+    if (!bundle) {
+      return res.status(400).json({ error: 'Bundle is required' });
+    }
+
+    const validationResult = await validationService.validateBundle(bundle);
+    
+    res.json({
+      success: true,
+      validation: validationResult
+    });
+  } catch (error: any) {
+    console.error('Error validating bundle:', error);
+    res.status(500).json({ 
+      success: false,
+      error: error.message || 'Failed to validate bundle' 
+    });
+  }
+});
+
 // Error handling middleware
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Unhandled error:', error);
@@ -761,3 +1140,4 @@ app.listen(PORT, () => {
 });
 
 export default app;
+

@@ -1,0 +1,55 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Intelligent Patient Template</div>"
+    },
+    "active": true,
+    "name": [{
+        "use": "official",
+        "family": "{{ msg.lastName }}",
+        "given": ["{{ msg.firstName }}"]
+    }],
+    {% if msg.gender -%}
+    "gender": {% assign g = msg.gender | downcase -%}
+        {% case g -%}
+            {% when 'm' -%}"male"
+            {% when 'male' -%}"male"
+            {% when 'man' -%}"male"
+            {% when 'f' -%}"female"
+            {% when 'female' -%}"female"
+            {% when 'woman' -%}"female"
+            {% when 'o' -%}"other"
+            {% when 'other' -%}"other"
+            {% when 'u' -%}"unknown"
+            {% when 'unknown' -%}"unknown"
+            {% when 'n/a' -%}"unknown"
+            {% else -%}"unknown"
+        {% endcase -%},
+    {% endif -%}
+    {% if msg.age -%}
+    {% assign age = msg.age -%}
+    {% assign birthYear = 2025 | minus: age -%}
+    "birthDate": "{{ birthYear }}-01-01",
+    "_birthDate": {
+        "extension": [{
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime-estimated",
+            "valueBoolean": true
+        }]
+    },
+    {% endif -%}
+    "telecom": [
+        {% if msg.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.phone }}",
+            "use": "home"
+        }
+        {% endif -%}
+    ],
+    "managingOrganization": {
+        "reference": "Organization/intelligent-system",
+        "display": "Intelligent Template System"
+    }
+}

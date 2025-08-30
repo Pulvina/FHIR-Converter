@@ -1,0 +1,102 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.uuid | default: msg.guid | default: msg.systemId | default: msg.id | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient System ID: {{ msg.uuid | default: msg.guid | default: msg.systemId | default: msg.id }}{% if msg.system %} ({{ msg.system }}){% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "RI",
+                        "display": "Resource identifier"
+                    }
+                ],
+                "text": "System Generated ID"
+            },
+            {% if msg.system or msg.systemName -%}
+            "system": "urn:uuid:{{ msg.system | default: msg.systemName | downcase | replace: ' ', '-' }}",
+            {% else -%}
+            "system": "urn:uuid:system",
+            {% endif -%}
+            "value": "{{ msg.uuid | default: msg.guid | default: msg.systemId | default: msg.id | default: msg.recordId }}"
+        },
+        {% if msg.alternateId or msg.altId -%}
+        {
+            "use": "secondary",
+            "type": {
+                "text": "Alternate ID"
+            },
+            "value": "{{ msg.alternateId | default: msg.altId }}"
+        }
+        {% endif -%}
+    ],
+    "active": true,
+    {% if msg.patientData -%}
+    {% comment -%} Handle generic patient data object {% endcomment -%}
+    {% if msg.patientData.name -%}
+    "name": [
+        {
+            "use": "official",
+            "text": "{{ msg.patientData.name }}"
+        }
+    ],
+    {% endif -%}
+    {% if msg.patientData.birthDate -%}
+    "birthDate": "{{ msg.patientData.birthDate }}",
+    {% endif -%}
+    {% if msg.patientData.gender -%}
+    "gender": "{{ msg.patientData.gender | downcase }}",
+    {% endif -%}
+    {% elsif msg.name or msg.demographics -%}
+    {% if msg.name -%}
+    "name": [
+        {
+            "use": "official",
+            "text": "{{ msg.name }}"
+        }
+    ],
+    {% endif -%}
+    {% if msg.demographics.birthDate or msg.birthDate -%}
+    "birthDate": "{{ msg.demographics.birthDate | default: msg.birthDate }}",
+    {% endif -%}
+    {% if msg.demographics.gender or msg.gender -%}
+    "gender": "{{ msg.demographics.gender | default: msg.gender | downcase }}",
+    {% endif -%}
+    {% endif -%}
+    {% if msg.metadata or msg.systemMetadata -%}
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-metadata",
+            "extension": [
+                {% if msg.metadata.createdAt or msg.systemMetadata.created -%}
+                {
+                    "url": "created",
+                    "valueDateTime": "{{ msg.metadata.createdAt | default: msg.systemMetadata.created }}"
+                },
+                {% endif -%}
+                {% if msg.metadata.updatedAt or msg.systemMetadata.lastModified -%}
+                {
+                    "url": "last-modified",
+                    "valueDateTime": "{{ msg.metadata.updatedAt | default: msg.systemMetadata.lastModified }}"
+                },
+                {% endif -%}
+                {% if msg.metadata.version or msg.systemMetadata.version -%}
+                {
+                    "url": "version",
+                    "valueString": "{{ msg.metadata.version | default: msg.systemMetadata.version }}"
+                }
+                {% endif -%}
+            ]
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/system",
+        "display": "{{ msg.system | default: msg.systemName | default: 'System Organization' }}"
+    }
+}

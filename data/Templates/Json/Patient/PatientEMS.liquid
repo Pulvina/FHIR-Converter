@@ -1,0 +1,215 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.caseId | default: msg.patient.id | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">EMS Patient - Case ID: {{ msg.caseId }}{% if msg.patient.unidentified %} (Unidentified){% endif %}{% if msg.patient.ageEstimate %}, Age: ~{{ msg.patient.ageEstimate }}{% endif %}</div>"
+    },
+    "active": true,
+    {% comment -%} Handle unidentified patients {% endcomment -%}
+    {% if msg.patient.unidentified -%}
+    "identifier": [
+        {
+            "use": "temp",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "ANON",
+                        "display": "Anonymous identifier"
+                    }
+                ]
+            },
+            "system": "urn:oid:emergency-medical-services",
+            "value": "{{ msg.caseId }}",
+            "assigner": {
+                "display": "Emergency Medical Services"
+            }
+        }
+    ],
+    {% else -%}
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "urn:oid:emergency-medical-services",
+            "value": "{{ msg.caseId | default: msg.patient.id }}"
+        }
+    ],
+    {% endif -%}
+    {% comment -%} Name handling for unidentified patients {% endcomment -%}
+    {% if msg.patient.unidentified -%}
+    "name": [
+        {
+            "use": "temp",
+            "text": "Unknown Patient - Case {{ msg.caseId }}"
+        }
+    ],
+    {% elsif msg.patient.name or msg.name -%}
+    "name": [
+        {
+            "use": "official",
+            "text": "{{ msg.patient.name | default: msg.name }}"
+        }
+    ],
+    {% endif -%}
+    {% comment -%} Gender normalization {% endcomment -%}
+    {% if msg.patient.sex or msg.sex -%}
+    {% assign gender = msg.patient.sex | default: msg.sex | downcase -%}
+    "gender": {% case gender -%}
+        {% when 'm' or 'male' or 'man' -%}"male"
+        {% when 'f' or 'female' or 'woman' -%}"female"
+        {% when 'o' or 'other' -%}"other"
+        {% else -%}"unknown"
+    {% endcase -%},
+    {% endif -%}
+    {% comment -%} Birth date estimation from age {% endcomment -%}
+    {% if msg.patient.ageEstimate or msg.ageEstimate -%}
+    {% assign age = msg.patient.ageEstimate | default: msg.ageEstimate -%}
+    {% if age == 45 -%}
+    "birthDate": "1980-01-01",
+    {% elsif age == 30 -%}
+    "birthDate": "1995-01-01",
+    {% elsif age == 50 -%}
+    "birthDate": "1975-01-01",
+    {% elsif age == 35 -%}
+    "birthDate": "1990-01-01",
+    {% else -%}
+    "birthDate": "1980-01-01",
+    {% endif -%}
+    "_birthDate": {
+        "extension": [
+            {
+                "url": "http://hl7.org/fhir/StructureDefinition/patient-birthTime-estimated",
+                "valueBoolean": true
+            },
+            {
+                "url": "http://hl7.org/fhir/StructureDefinition/data-absent-reason",
+                "valueCode": "unknown"
+            }
+        ]
+    },
+    {% endif -%}
+    {% comment -%} Extensions for emergency context {% endcomment -%}
+    "extension": [
+        {% if msg.caseId -%}
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-case-id",
+            "valueString": "{{ msg.caseId }}"
+        },
+        {% endif -%}
+        {% if msg.patient.unidentified -%}
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-unidentified",
+            "valueBoolean": true
+        },
+        {% endif -%}
+        {% if msg.incidentLocation -%}
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-incident-location",
+            "extension": [
+                {% if msg.incidentLocation.lat and msg.incidentLocation.lng -%}
+                {
+                    "url": "geolocation",
+                    "extension": [
+                        {
+                            "url": "latitude",
+                            "valueDecimal": {{ msg.incidentLocation.lat }}
+                        },
+                        {
+                            "url": "longitude",
+                            "valueDecimal": {{ msg.incidentLocation.lng }}
+                        }
+                    ]
+                },
+                {% endif -%}
+                {% if msg.incidentLocation.description -%}
+                {
+                    "url": "description",
+                    "valueString": "{{ msg.incidentLocation.description }}"
+                }
+                {% endif -%}
+            ]
+        },
+        {% endif -%}
+        {% if msg.vitals -%}
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-initial-vitals",
+            "extension": [
+                {% if msg.vitals.heartRate -%}
+                {
+                    "url": "heartRate",
+                    "valueQuantity": {
+                        "value": {{ msg.vitals.heartRate }},
+                        "unit": "beats/min",
+                        "system": "http://unitsofmeasure.org",
+                        "code": "/min"
+                    }
+                },
+                {% endif -%}
+                {% if msg.vitals.respiratoryRate -%}
+                {
+                    "url": "respiratoryRate",
+                    "valueQuantity": {
+                        "value": {{ msg.vitals.respiratoryRate }},
+                        "unit": "breaths/min",
+                        "system": "http://unitsofmeasure.org",
+                        "code": "/min"
+                    }
+                },
+                {% endif -%}
+                {% if msg.vitals.bloodPressure -%}
+                {
+                    "url": "bloodPressure",
+                    "valueString": "{{ msg.vitals.bloodPressure }}"
+                },
+                {% endif -%}
+                {% if msg.vitals.oxygenSaturation -%}
+                {
+                    "url": "oxygenSaturation",
+                    "valueQuantity": {
+                        "value": {{ msg.vitals.oxygenSaturation }},
+                        "unit": "%",
+                        "system": "http://unitsofmeasure.org",
+                        "code": "%"
+                    }
+                }
+                {% endif -%}
+            ]
+        }
+        {% endif -%}
+    ],
+    {% comment -%} Contact for transport destination {% endcomment -%}
+    {% if msg.transportedTo -%}
+    "contact": [
+        {
+            "relationship": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/v2-0131",
+                            "code": "O",
+                            "display": "Other"
+                        }
+                    ],
+                    "text": "Transport Destination"
+                }
+            ],
+            "organization": {
+                "display": "{{ msg.transportedTo }}"
+            }
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/emergency-medical-services",
+        "display": "Emergency Medical Services"
+    }
+}

@@ -1,0 +1,85 @@
+{
+    "resourceType": "Patient", 
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with nested contact information</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Handle nested contact structures {% endcomment -%}
+    "telecom": [
+        {% comment -%} Primary contact nested structure {% endcomment -%}
+        {% if msg.contact.primary.phone or msg.contactInfo.phone.primary or msg.personalInfo.contact.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.contact.primary.phone | default: msg.contactInfo.phone.primary | default: msg.personalInfo.contact.phone }}",
+            "use": "home",
+            "rank": 1
+        },
+        {% endif -%}
+        {% comment -%} Secondary contact nested structure {% endcomment -%}
+        {% if msg.contact.secondary.phone or msg.contactInfo.phone.secondary or msg.personalInfo.contact.mobile -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.contact.secondary.phone | default: msg.contactInfo.phone.secondary | default: msg.personalInfo.contact.mobile }}",
+            "use": "mobile",
+            "rank": 2
+        },
+        {% endif -%}
+        {% comment -%} Work contact nested structure {% endcomment -%}
+        {% if msg.contact.work.phone or msg.contactInfo.phone.work or msg.workInfo.contact.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.contact.work.phone | default: msg.contactInfo.phone.work | default: msg.workInfo.contact.phone }}",
+            "use": "work",
+            "rank": 3
+        },
+        {% endif -%}
+        {% comment -%} Email nested structures {% endcomment -%}
+        {% if msg.contact.primary.email or msg.contactInfo.email.primary or msg.personalInfo.contact.email -%}
+        {
+            "system": "email",
+            "value": "{{ msg.contact.primary.email | default: msg.contactInfo.email.primary | default: msg.personalInfo.contact.email }}",
+            "use": "home",
+            "rank": 1
+        },
+        {% endif -%}
+        {% if msg.contact.work.email or msg.contactInfo.email.work or msg.workInfo.contact.email -%}
+        {
+            "system": "email",
+            "value": "{{ msg.contact.work.email | default: msg.contactInfo.email.work | default: msg.workInfo.contact.email }}",
+            "use": "work",
+            "rank": 2
+        },
+        {% endif -%}
+        {% comment -%} Fax nested structures {% endcomment -%}
+        {% if msg.contact.fax or msg.contactInfo.fax.work or msg.workInfo.contact.fax -%}
+        {
+            "system": "fax",
+            "value": "{{ msg.contact.fax | default: msg.contactInfo.fax.work | default: msg.workInfo.contact.fax }}",
+            "use": "work"
+        }
+        {% endif -%}
+    ],
+    {% if msg.birthDate or msg.dob or msg.personalInfo.birthDate -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob | default: msg.personalInfo.birthDate }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/nested-data",
+        "display": "Nested Data Healthcare System"
+    }
+}

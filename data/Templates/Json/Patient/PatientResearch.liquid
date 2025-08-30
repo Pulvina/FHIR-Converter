@@ -1,0 +1,159 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.subjectId | default: msg.participantId | default: msg.id | to_json_string | generate_uuid }}",
+    {% comment -%} Generate narrative for research participant {% endcomment -%}
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Research Participant: {{ msg.subjectId | default: msg.participantId }}{% if msg.demographics.age %}, Age: {{ msg.demographics.age }}{% endif %}{% if msg.demographics.gender %}, Gender: {{ msg.demographics.gender }}{% endif %}{% if msg.studyParticipation.studyName %}, Study: {{ msg.studyParticipation.studyName }}{% endif %}</div>"
+    },
+    {% comment -%} Research study identifier {% endcomment -%}
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical Record Number"
+                    }
+                ],
+                "text": "Research Subject ID"
+            },
+            "system": "https://fhir.research.org/ids/subject-id",
+            "value": "{{ msg.subjectId | default: msg.participantId | default: msg.id }}"
+        }
+    ],
+    "active": true,
+    {% comment -%} Handle gender from demographics {% endcomment -%}
+    {% if msg.demographics.gender -%}
+    "gender": {% assign genderVal = msg.demographics.gender | downcase -%}
+        {% if genderVal == 'male' or genderVal == 'm' -%}
+            "male",
+        {% elsif genderVal == 'female' or genderVal == 'f' -%}
+            "female",
+        {% elsif genderVal == 'unknown' or genderVal == 'u' -%}
+            "unknown",
+        {% else -%}
+            "other",
+        {% endif -%}
+    {% endif -%}
+    {% comment -%} Calculate approximate birth date from age if provided {% endcomment -%}
+    {% if msg.demographics.age -%}
+    {% assign currentYear = 2025 -%}
+    {% assign birthYear = currentYear | minus: msg.demographics.age -%}
+    "birthDate": "{{ birthYear }}-01-01",
+    {% elsif msg.demographics.birthDate or msg.demographics.dob -%}
+    "birthDate": "{{ msg.demographics.birthDate | default: msg.demographics.dob }}",
+    {% endif -%}
+    {% comment -%} Add extensions for research-specific data {% endcomment -%}
+    "extension": [
+        {% if msg.demographics.ethnicity -%}
+        {
+            "url": "http://hl7.org/fhir/us/core/StructureDefinition/us-core-ethnicity",
+            "extension": [
+                {
+                    "url": "text",
+                    "valueString": "{{ msg.demographics.ethnicity }}"
+                }
+            ]
+        },
+        {% endif -%}
+        {% if msg.lifestyle -%}
+        {
+            "url": "https://fhir.research.org/StructureDefinition/lifestyle-factors",
+            "extension": [
+                {% if msg.lifestyle.smoker != null -%}
+                {
+                    "url": "smoking-status",
+                    "valueBoolean": {{ msg.lifestyle.smoker }}
+                },
+                {% endif -%}
+                {% if msg.lifestyle.alcohol -%}
+                {
+                    "url": "alcohol-use",
+                    "valueString": "{{ msg.lifestyle.alcohol }}"
+                },
+                {% endif -%}
+                {% if msg.lifestyle.exerciseFrequency -%}
+                {
+                    "url": "exercise-frequency",
+                    "valueString": "{{ msg.lifestyle.exerciseFrequency }}"
+                }{% if msg.lifestyle.diet %},{% endif %}
+                {% endif -%}
+                {% if msg.lifestyle.diet -%}
+                {
+                    "url": "diet",
+                    "valueString": "{{ msg.lifestyle.diet }}"
+                }
+                {% endif -%}
+            ]
+        },
+        {% endif -%}
+        {% if msg.studyParticipation -%}
+        {
+            "url": "https://fhir.research.org/StructureDefinition/research-study-participation",
+            "extension": [
+                {% if msg.studyParticipation.studyName -%}
+                {
+                    "url": "study-name",
+                    "valueString": "{{ msg.studyParticipation.studyName }}"
+                },
+                {% endif -%}
+                {% if msg.studyParticipation.enrolledDate -%}
+                {
+                    "url": "enrollment-date",
+                    "valueDate": "{{ msg.studyParticipation.enrolledDate }}"
+                },
+                {% endif -%}
+                {% if msg.studyParticipation.consentSigned != null -%}
+                {
+                    "url": "consent-signed",
+                    "valueBoolean": {{ msg.studyParticipation.consentSigned }}
+                }{% if msg.studyParticipation.studyArm or msg.studyParticipation.cohort %},{% endif %}
+                {% endif -%}
+                {% if msg.studyParticipation.studyArm -%}
+                {
+                    "url": "study-arm",
+                    "valueString": "{{ msg.studyParticipation.studyArm }}"
+                }{% if msg.studyParticipation.cohort %},{% endif %}
+                {% endif -%}
+                {% if msg.studyParticipation.cohort -%}
+                {
+                    "url": "cohort",
+                    "valueString": "{{ msg.studyParticipation.cohort }}"
+                }
+                {% endif -%}
+            ]
+        },
+        {% endif -%}
+        {% if msg.researchData -%}
+        {
+            "url": "https://fhir.research.org/StructureDefinition/research-data",
+            "valueString": "{{ msg.researchData | json }}"
+        }
+        {% endif -%}
+    ],
+    {% comment -%} Contact information if available {% endcomment -%}
+    {% if msg.contact or msg.contactInfo -%}
+    "telecom": [
+        {% assign contactData = msg.contact | default: msg.contactInfo -%}
+        {% if contactData.phone or contactData.phoneNumber -%}
+        {
+            "system": "phone",
+            "value": "{{ contactData.phone | default: contactData.phoneNumber }}"
+        }{% if contactData.email %},{% endif %}
+        {% endif -%}
+        {% if contactData.email -%}
+        {
+            "system": "email",
+            "value": "{{ contactData.email }}"
+        }
+        {% endif -%}
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/research.organization",
+        "display": "Research Study Center"
+    }
+}

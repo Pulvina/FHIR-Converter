@@ -1,0 +1,1406 @@
+[
+  {
+    "code": "AC",
+    "display": "Accreditation/Certification Identifier",
+    "definition": "Identifier that has been assigned by an accreditation or certification organization in specific fields, indicating a recognized skill",
+    "status": "N",
+    "v2ConceptComment": "In Ask at Order Entry (AOE) questions this can be used to identify the ID with the assigning authority. For instance, a credentialed sonographer whose identifier assigned by the credentialing body has been entered can be properly labeled.",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "ACSN",
+    "display": "Accession ID",
+    "definition": "Accession Identifier",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "Accession Identifier",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "AIN",
+    "display": "Animal Identification Number (US Official)",
+    "definition": "A numbering system for the official identification of individual animals in the United States that provides a nationally unique identification number for each animal. The first two numbers on a tag are the numbers assigned to a specific State.",
+    "status": "N",
+    "v2ConceptComment": "AIN is the official acronym used by USDA",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "AM",
+    "display": "American Express",
+    "definition": "American Express",
+    "status": "A",
+    "v2ConceptComment": "Deprecated and replaced by BC in v 2.5.",
+    "v2ConceptCommentAsPublished": "Deprecated and replaced by BC in v 2.5.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "American Express"
+    }
+  },
+  {
+    "code": "AMA",
+    "display": "American Medical Association Number",
+    "definition": "A physician identifier assigned by the AMA.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A physician identifier assigned by the AMA.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "AN",
+    "display": "Account number",
+    "definition": "Account An identifier that is unique to an account.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to an account.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Kontonummer"
+    }
+  },
+  {
+    "code": "ANC",
+    "display": "Account number Creditor",
+    "definition": "A more precise definition of an account number",
+    "status": "A",
+    "v2ConceptComment": "Class: Financial<p>Sometimes two distinct account numbers must be transmitted in the same message, one as the creditor, the other as the debitor.<p>Kreditorenkontonummer",
+    "v2ConceptCommentAsPublished": "Class: Financial<p>A more precise definition of an account number: sometimes two distinct account numbers must be transmitted in the same message, one as the creditor, the other as the debitor.<p>Kreditorenkontonummer",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "AND",
+    "display": "Account number debitor",
+    "definition": "A more precise definition of an account number",
+    "status": "A",
+    "v2ConceptComment": "Class: Financial<p>Sometimes two distinct account numbers must be transmitted in the same message, one as the creditor, the other as the debitor.<p>Debitorenkontonummer",
+    "v2ConceptCommentAsPublished": "Class: Financial<p>A more precise definition of an account number: sometimes two distinct account numbers must be transmitted in the same message, one as the creditor, the other as the debitor.<p>Debitorenkontonummer",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "ANON",
+    "display": "Anonymous identifier",
+    "definition": "An identifier for a living subject whose real identity is protected or suppressed",
+    "status": "A",
+    "v2ConceptComment": "Justification: For public health reporting purposes, anonymous identifiers are occasionally used for protecting patient identity in reporting certain results. For instance, a state health department may choose to use a scheme for generating an anonymous identifier for reporting a patient that has had a positive human immunodeficiency virus antibody test. Anonymous identifiers can be used in PID 3 by replacing the medical record number or other non-anonymous identifier. The assigning authority for an anonymous identifier would be the state/local health department.",
+    "v2ConceptCommentAsPublished": "An identifier for a living subject whose real identity is protected or suppressed Justification: For public health reporting purposes, anonymous identifiers are occasionally used for protecting patient identity in reporting certain results. For instance, a state health department may choose to use a scheme for generating an anonymous identifier for reporting a patient that has had a positive human immunodeficiency virus antibody test. Anonymous identifiers can be used in PID 3 by replacing the medical record number or other non-anonymous identifier. The assigning authority for an anonymous identifier would be the state/local health department.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "ANT",
+    "display": "Temporary Account Number",
+    "definition": "Temporary version of an Account Number",
+    "status": "A",
+    "v2ConceptComment": "Class: Financial Use Case: An ancillary system that does not normally assign account numbers is the first time to register a patient. This ancillary system will generate a temporary account number that will only be used until an official account number is assigned.",
+    "v2ConceptCommentAsPublished": "Class: Financial Temporary version of an Account Number. Use Case: An ancillary system that does not normally assign account numbers is the first time to register a patient. This ancillary system will generate a temporary account number that will only be used until an official account number is assigned.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "APRN",
+    "display": "Advanced Practice Registered Nurse number",
+    "definition": "An identifier that is unique to an advanced practice registered nurse within the jurisdiction of a certifying board",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to an advanced practice registered nurse within the jurisdiction of a certifying board",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "ASID",
+    "display": "Ancestor Specimen ID",
+    "definition": "A unique identifier for the ancestor specimen.",
+    "status": "A",
+    "v2ConceptComment": "All child, grandchild, etc. specimens of the ancestor specimen share the same Ancestor Specimen ID.",
+    "v2ConceptCommentAsPublished": "A unique identifier for the ancestor specimen. All child, grandchild, etc. specimens of the ancestor specimen share the same Ancestor Specimen ID.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "BA",
+    "display": "Bank Account Number",
+    "definition": "Bank Account Number",
+    "status": "A",
+    "v2ConceptComment": "Class: Financial",
+    "v2ConceptCommentAsPublished": "Class: Financial",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "BC",
+    "display": "Bank Card Number",
+    "definition": "An identifier that is unique to a person's bank card",
+    "status": "A",
+    "v2ConceptComment": "Class: Financial<p>Replaces AM, DI, DS, MS, and VS beginning in v 2.5.",
+    "v2ConceptCommentAsPublished": "Class: Financial<p>An identifier that is unique to a person's bank card. Replaces AM, DI, DS, MS, and VS beginning in v 2.5.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "BCFN",
+    "display": "Birth Certificate File Number",
+    "definition": "The identifier used within the jurisdictional vital records office file system as an auxiliary means of accessing the record associated with the birth certificate.",
+    "status": "N",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "BCT",
+    "display": "Birth Certificate",
+    "definition": "A number associated with a document identifying the event of a person's birth",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number associated with a document identifying the event of a person's birth.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "BR",
+    "display": "Birth registry number",
+    "definition": "An identifier unique within the Assigning Authority that is the official legal record of a person's birth.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier unique within the Assigning Authority that is the official legal record of a person's birth.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Geburtsregisternummer"
+    }
+  },
+  {
+    "code": "BRN",
+    "display": "Breed Registry Number",
+    "definition": "Breed Registry Number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "BSNR",
+    "display": "Primary physician office number",
+    "definition": "Primary physician office number",
+    "status": "A",
+    "v2ConceptComment": "Betriebsstättennummer - for use in the German realm.",
+    "v2ConceptCommentAsPublished": "Betriebsstättennummer - for use in the German realm.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "CAAI",
+    "display": "Consumer Application Account Identifier",
+    "definition": "An identifier for the consumer (e.g., patient, caregiver) for an application such as a portal or App.",
+    "status": "N",
+    "v2ConceptComment": "This may be the same as a username, but frequently is different.",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "CC",
+    "display": "Cost Center number",
+    "definition": "Cost Center number",
+    "status": "A",
+    "v2ConceptComment": "Class: Financial<p>Use Case: needed especially for transmitting information about invoices.",
+    "v2ConceptCommentAsPublished": "Class: Financial<p>Use Case: needed especially for transmitting information about invoices.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "CONM",
+    "display": "Change of Name Document",
+    "definition": "A number associated with a document identifying a person's legal change of name.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number associated with a document identifying a person's legal change of name.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "CY",
+    "display": "County number",
+    "definition": "County number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "CZ",
+    "display": "Citizenship Card",
+    "definition": "A number assigned by a person's country of residence to identify a person's citizenship.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number assigned by a person's country of residence to identify a person's citizenship.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "DC",
+    "display": "Death Certificate ID",
+    "definition": "The identifier assigned to a death certificate, and printed on the death certificate when issued by a jurisdictional vital records office",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "DCFN",
+    "display": "Death Certificate File Number",
+    "definition": "The identifier used within the jurisdictional vital records office file system as an auxiliary means of accessing the record associated with the death certificate.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "DDS",
+    "display": "Dentist license number",
+    "definition": "An identifier that is unique to a dentist within the jurisdiction of the licensing board",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to a dentist within the jurisdiction of the licensing board",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "DEA",
+    "display": "Drug Enforcement Administration registration number",
+    "definition": "An identifier for an individual or organization relative to controlled substance regulation and transactions.",
+    "status": "A",
+    "v2ConceptComment": "Use case: This is a registration number that identifies an individual or organization relative to controlled substance regulation and transactions. A DEA number has a very precise and widely accepted meaning within the United States. Surprisingly, the US Drug Enforcement Administration does not solely assign DEA numbers in the United States. Hospitals have the authority to issue DEA numbers to their medical residents. These DEA numbers are based upon the hospital’s DEA number, but the authority rests with the hospital on the assignment to the residents. Thus, DEA as an Identifier Type is necessary in addition to DEA as an Assigning Authority.",
+    "v2ConceptCommentAsPublished": "An identifier for an individual or organization relative to controlled substance regulation and transactions. Use case: This is a registration number that identifies an individual or organization relative to controlled substance regulation and transactions. A DEA number has a very precise and widely accepted meaning within the United States. Surprisingly, the US Drug Enforcement Administration does not solely assign DEA numbers in the United States. Hospitals have the authority to issue DEA numbers to their medical residents. These DEA numbers are based upon the hospital’s DEA number, but the authority rests with the hospital on the assignment to the residents. Thus, DEA as an Identifier Type is necessary in addition to DEA as an Assigning Authority.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "DFN",
+    "display": "Drug Furnishing or prescriptive authority Number",
+    "definition": "An identifier issued to a health care provider authorizing the person to write drug orders",
+    "status": "A",
+    "v2ConceptComment": "Use Case: A nurse practitioner has authorization to furnish or prescribe pharmaceutical substances; this identifier is in component 1.",
+    "v2ConceptCommentAsPublished": "An identifier issued to a health care provider authorizing the person to write drug orders<p>Use Case: A nurse practitioner has authorization to furnish or prescribe pharmaceutical substances; this identifier is in component 1.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "DI",
+    "display": "Diner's Club card",
+    "definition": "Diner's Club card",
+    "status": "A",
+    "v2ConceptComment": "Deprecated and replaced by BC in v 2.5.",
+    "v2ConceptCommentAsPublished": "Deprecated and replaced by BC in v 2.5.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Diners Club"
+    }
+  },
+  {
+    "code": "DL",
+    "display": "Driver's license number",
+    "definition": "Driver's license number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Führerscheinnummer"
+    }
+  },
+  {
+    "code": "DN",
+    "display": "Doctor number",
+    "definition": "Doctor number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Arztnummer"
+    }
+  },
+  {
+    "code": "DO",
+    "display": "Osteopathic License number",
+    "definition": "An identifier that is unique to an osteopath within the jurisdiction of a licensing board.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to an osteopath within the jurisdiction of a licensing board.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "DP",
+    "display": "Diplomatic Passport",
+    "definition": "A number assigned to a diplomatic passport.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number assigned to a diplomatic passport.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "DPM",
+    "display": "Podiatrist license number",
+    "definition": "An identifier that is unique to a podiatrist within the jurisdiction of the licensing board.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to a podiatrist within the jurisdiction of the licensing board.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "DR",
+    "display": "Donor Registration Number",
+    "definition": "Donor Registration Number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "DS",
+    "display": "Discover Card",
+    "definition": "Discover Card",
+    "status": "A",
+    "v2ConceptComment": "Deprecated and replaced by BC in v 2.5.",
+    "v2ConceptCommentAsPublished": "Deprecated and replaced by BC in v 2.5.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Discover Card"
+    }
+  },
+  {
+    "code": "DSG",
+    "display": "Diagnostic Study Group",
+    "definition": "Unique Identifier that groups several orders that are to be performed together.",
+    "status": "N",
+    "v2ConceptComment": "Example: Radiology studies",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "EI",
+    "display": "Employee number",
+    "definition": "A number that uniquely identifies an employee to an employer.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number that uniquely identifies an employee to an employer.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Arbeitnehmernummer"
+    }
+  },
+  {
+    "code": "EN",
+    "display": "Employer number",
+    "definition": "Employer number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Arbeitgebernummer"
+    }
+  },
+  {
+    "code": "ESN",
+    "display": "Staff Enterprise Number",
+    "definition": "An identifier that is unique to a staff member within an enterprise (as identified by the Assigning Authority).",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to a staff member within an enterprise (as identified by the Assigning Authority).",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "ETIN",
+    "display": "Electronic Transmitter Identification Number",
+    "definition": "A unique identifier usually assigned by a health plan or clearinghouse to an organization or provider that electronically transmits healthcare transactions, such as claims, eligibility inquiries, or remittance advices.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "FDR",
+    "display": "Fetal Death Report ID",
+    "definition": "The identifier assigned to a fetal death report, and printed on the fetal death report when issued by a jurisdictional vital records office",
+    "status": "N",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "FDRFN",
+    "display": "Fetal Death Report File Number",
+    "definition": "The identifier used within the jurisdictional vital records office file system as an auxiliary means of accessing the record associated with the fetal death report certificate.",
+    "status": "N",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "FGN",
+    "display": "Filler Group Number",
+    "definition": "Unique identifier assigned to a group of orders by the filler application.",
+    "status": "N",
+    "v2ConceptComment": "This is analogous to the Placer Group Number ORC-4, except that it is assigned by the filler.",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "FI",
+    "display": "Facility ID",
+    "definition": "Facility ID",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "FILL",
+    "display": "Filler Identifier",
+    "definition": "An identifier for a request where the identifier is issued by the person, or service, that produces the observations or fulfills the request.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "GI",
+    "display": "Guarantor internal identifier",
+    "definition": "Guarantor internal identifier",
+    "status": "A",
+    "v2ConceptComment": "Class: Financial",
+    "v2ConceptCommentAsPublished": "Class: Financial",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "interne ID des Zahlungspflichtigen"
+    }
+  },
+  {
+    "code": "GIN",
+    "display": "Animal Group Identifier (US Official)",
+    "definition": "Identifier that can be used to unambiguously describe a specific group of animals.",
+    "status": "N",
+    "v2ConceptComment": "GIN is the official acronym used by USDA",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "GKV",
+    "display": "Insured's ID with Public Insurance",
+    "definition": "Identifier that can be used to unambiguously describe the ID of a patient with a public insurance company.",
+    "status": "N",
+    "v2ConceptComment": "GKV is a patient ID with a public insurance company.",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "GL",
+    "display": "General ledger number",
+    "definition": "General ledger number",
+    "status": "A",
+    "v2ConceptComment": "Class: Financial",
+    "v2ConceptCommentAsPublished": "Class: Financial",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "GN",
+    "display": "Guarantor external identifier",
+    "definition": "Guarantor external identifier",
+    "status": "A",
+    "v2ConceptComment": "Class: Financial",
+    "v2ConceptCommentAsPublished": "Class: Financial",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "externe ID des Zahlungspflichtigen"
+    }
+  },
+  {
+    "code": "HC",
+    "display": "Health Card Number",
+    "definition": "Health Card Number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "IND",
+    "display": "Indigenous/Aboriginal",
+    "definition": "A number assigned to a member of an indigenous or aboriginal group outside of Canada.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number assigned to a member of an indigenous or aboriginal group outside of Canada.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "IRISTEM",
+    "display": "An IRI stem",
+    "definition": "An IRI string that can be prepended to the code to obtain a concept IRI for RDF applications. This should be a valid, absolute IRI as defined in RFC 3987. See https://hl7.org/fhir/rdf.html#iri-stem for details on how this value may be used.",
+    "status": "",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "JHN",
+    "display": "Jurisdictional health number",
+    "definition": "Jurisdictional health number",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance<p>2 uses: a) UK jurisdictional CHI number; b) Canadian provincial health card number:",
+    "v2ConceptCommentAsPublished": "Class: Insurance<p>2 uses: a) UK jurisdictional CHI number; b) Canadian provincial health card number:",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "KZVA",
+    "display": "Dentist Office Number",
+    "definition": "Identifier that can be used to unambiguously identify the practice of a dentist.",
+    "status": "N",
+    "v2ConceptComment": "KZVA is an ID for the practice of a dentist.",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "LACSN",
+    "display": "Laboratory Accession ID",
+    "definition": "A laboratory accession id is used in the laboratory domain.",
+    "status": "A",
+    "v2ConceptComment": "The concept of accession is used in other domains such as radiology, so the LACSN is used to distinguish a lab accession id from an radiology accession id",
+    "v2ConceptCommentAsPublished": "A laboratory accession id is used in the laboratory domain. The concept of accession is used in other domains such as radiology, so the LACSN is used to distinguish a lab accession id from an radiology accession id",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "LANR",
+    "display": "Lifelong physician number",
+    "definition": "Lifelong physician number",
+    "status": "A",
+    "v2ConceptComment": "Lebenslange Arztnummer - for use in German realm.",
+    "v2ConceptCommentAsPublished": "Lebenslange Arztnummer - for use in German realm.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "LI",
+    "display": "Labor and industries number",
+    "definition": "Labor and industries number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "L&I",
+    "display": "Labor and industries number",
+    "definition": "Labor and industries number. Note that this was introduced erroneously (with an ampersand in the code value) many years ago.",
+    "status": "D",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": "Deprecated as of v 2.5; Use LI instead."
+  },
+  {
+    "code": "LN",
+    "display": "License number",
+    "definition": "License number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "LR",
+    "display": "Local Registry ID",
+    "definition": "Local Registry ID",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "MA",
+    "display": "Patient Medicaid number",
+    "definition": "Patient Medicaid number",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance",
+    "v2ConceptCommentAsPublished": "Class: Insurance",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Armennummer"
+    }
+  },
+  {
+    "code": "MB",
+    "display": "Member Number",
+    "definition": "An identifier for the insured of an insurance policy (this insured always has a subscriber), usually assigned by the insurance carrier.",
+    "status": "A",
+    "v2ConceptComment": "Use Case: Person is covered by an insurance policy. This person may or may not be the subscriber of the policy.",
+    "v2ConceptCommentAsPublished": "An identifier for the insured of an insurance policy (this insured always has a subscriber), usually assigned by the insurance carrier.<p>Use Case: Person is covered by an insurance policy. This person may or may not be the subscriber of the policy.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "MC",
+    "display": "Patient's Medicare number",
+    "definition": "Patient's Medicare number",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance",
+    "v2ConceptCommentAsPublished": "Class: Insurance",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Rentnernummer"
+    }
+  },
+  {
+    "code": "MCD",
+    "display": "Practitioner Medicaid number",
+    "definition": "Practitioner Medicaid number",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance",
+    "v2ConceptCommentAsPublished": "Class: Insurance",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "MCN",
+    "display": "Microchip Number",
+    "definition": "Microchip Number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "MCR",
+    "display": "Practitioner Medicare number",
+    "definition": "Practitioner Medicare number",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance",
+    "v2ConceptCommentAsPublished": "Class: Insurance",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "MCT",
+    "display": "Marriage Certificate",
+    "definition": "A number associated with a document identifying the event of a person's marriage.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number associated with a document identifying the event of a person's marriage.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "MD",
+    "display": "Medical License number",
+    "definition": "An identifier that is unique to a medical doctor within the jurisdiction of a licensing board.",
+    "status": "A",
+    "v2ConceptComment": "Use Case: These license numbers are sometimes used as identifiers. In some states, the same authority issues all three identifiers, e.g., medical, osteopathic, and physician assistant licenses all issued by one state medical board. For this case, the CX data type requires distinct identifier types to accurately interpret component 1. Additionally, the distinction among these license types is critical in most health care settings (this is not to convey full licensing information, which requires a segment to support all related attributes).",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to a medical doctor within the jurisdiction of a licensing board. Use Case: These license numbers are sometimes used as identifiers. In some states, the same authority issues all three identifiers, e.g., medical, osteopathic, and physician assistant licenses all issued by one state medical board. For this case, the CX data type requires distinct identifier types to accurately interpret component 1. Additionally, the distinction among these license types is critical in most health care settings (this is not to convey full licensing information, which requires a segment to support all related attributes).",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "MI",
+    "display": "Military ID number",
+    "definition": "A number assigned to an individual who has had military duty, but is not currently on active duty. The number is assigned by the DOD or Veterans' Affairs (VA).",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number assigned to an individual who has had military duty, but is not currently on active duty. The number is assigned by the DOD or Veterans' Affairs (VA).",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "MR",
+    "display": "Medical record number",
+    "definition": "An identifier that is unique to a patient within a set of medical records, not necessarily unique within an application.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to a patient within a set of medical records, not necessarily unique within an application.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Krankenaktennummer"
+    }
+  },
+  {
+    "code": "MRT",
+    "display": "Temporary Medical Record Number",
+    "definition": "Temporary version of a Medical Record Number",
+    "status": "A",
+    "v2ConceptComment": "Use Case: An ancillary system that does not normally assign medical record numbers is the first time to register a patient. This ancillary system will generate a temporary medical record number that will only be used until an official medical record number is assigned.",
+    "v2ConceptCommentAsPublished": "Temporary version of a Medical Record Number Use Case: An ancillary system that does not normally assign medical record numbers is the first time to register a patient. This ancillary system will generate a temporary medical record number that will only be used until an official medical record number is assigned.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "MS",
+    "display": "MasterCard",
+    "definition": "MasterCard",
+    "status": "A",
+    "v2ConceptComment": "Deprecated and replaced by BC in v 2.5.",
+    "v2ConceptCommentAsPublished": "Deprecated and replaced by BC in v 2.5.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "MasterCard"
+    }
+  },
+  {
+    "code": "NBSNR",
+    "display": "Secondary physician office number",
+    "definition": "Secondary physician office number",
+    "status": "A",
+    "v2ConceptComment": "Nebenbetriebsstättennummer - for use in the German realm.",
+    "v2ConceptCommentAsPublished": "Nebenbetriebsstättennummer - for use in the German realm.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "NCT",
+    "display": "Naturalization Certificate",
+    "definition": "A number associated with a document identifying a person's retention of citizenship in a particular country.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number associated with a document identifying a person's retention of citizenship in a particular country.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "NE",
+    "display": "National employer identifier",
+    "definition": "National employer identifier",
+    "status": "A",
+    "v2ConceptComment": "In the US, the Assigning Authority for this value is typically CMS, but it may be used by all providers and insurance companies in HIPAA related transactions.",
+    "v2ConceptCommentAsPublished": "In the US, the Assigning Authority for this value is typically CMS, but it may be used by all providers and insurance companies in HIPAA related transactions.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "NH",
+    "display": "National Health Plan Identifier",
+    "definition": "National Health Plan Identifier",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance Used for the UK NHS national identifier.",
+    "v2ConceptCommentAsPublished": "Class: Insurance<p>Used for the UK NHS national identifier.<p>In the US, the Assigning Authority for this value is typically CMS, but it may be used by all providers and insurance companies in HIPAA related transactions.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "NI",
+    "display": "National unique individual identifier",
+    "definition": "National unique individual identifier",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance In the US, the Assigning Authority for this value is typically CMS, but it may be used by all providers and insurance companies in HIPAA related transactions.",
+    "v2ConceptCommentAsPublished": "Class: Insurance In the US, the Assigning Authority for this value is typically CMS, but it may be used by all providers and insurance companies in HIPAA related transactions.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "NII",
+    "display": "National Insurance Organization Identifier",
+    "definition": "National Insurance Organization Identifier",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance In Germany a national identifier for an insurance company. It is printed on the insurance card (health card). It is not to be confused with the health card number itself.<p>Krankenkassen-ID der KV-Karte",
+    "v2ConceptCommentAsPublished": "Class: Insurance In Germany a national identifier for an insurance company. It is printed on the insurance card (health card). It is not to be confused with the health card number itself.<p>Krankenkassen-ID der KV-Karte",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Institutskennzeichen der Krankenkasse"
+    }
+  },
+  {
+    "code": "NIIH",
+    "display": "National Insurance Headquarters Organization Identifier",
+    "definition": "National Insurance Headquarters Organization Identifier",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance",
+    "v2ConceptCommentAsPublished": "Class: Insurance",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Institutskennzeichen des Krankenkassensitzes"
+    }
+  },
+  {
+    "code": "NIIP",
+    "display": "National Insurance Payor Identifier (Payor)",
+    "definition": "National Insurance Payor Identifier (Payor)",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance In Germany the insurance identifier addressed as the payor.<p>Krankenkassen-ID des Rechnungsempfängers<p>Use case: a subdivision issues the card with their identifier, but the main division is going to pay the invoices.",
+    "v2ConceptCommentAsPublished": "Class: Insurance In Germany the insurance identifier addressed as the payor.<p>Krankenkassen-ID des Rechnungsempfängers<p>Use case: a subdivision issues the card with their identifier, but the main division is going to pay the invoices.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Vertragskassennummer (VKNR)"
+    }
+  },
+  {
+    "code": "NNxxx",
+    "display": "National Person Identifier where the xxx is the ISO table 3166 3-character (alphabetic) country code",
+    "definition": "National Person Identifier where the xxx is the ISO table 3166 3-character (alphabetic) country code",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "NP",
+    "display": "Nurse practitioner number",
+    "definition": "An identifier that is unique to a nurse practitioner within the jurisdiction of a certifying board.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to a nurse practitioner within the jurisdiction of a certifying board.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "NPI",
+    "display": "National provider identifier",
+    "definition": "National provider identifier",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance In the US, the Assigning Authority for this value is typically CMS, but it may be used by all providers and insurance companies in HIPAA related transactions.",
+    "v2ConceptCommentAsPublished": "Class: Insurance In the US, the Assigning Authority for this value is typically CMS, but it may be used by all providers and insurance companies in HIPAA related transactions.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "OBI",
+    "display": "Observation Instance Identifier",
+    "definition": "Unique and persistent identifier for an observation instance",
+    "status": "N",
+    "v2ConceptComment": "For example in the IHE-LCC Profile this is used to identify the OBX-21 of the result for which a clarification is requested using an OML^O59_OML_O59 message structure",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "OD",
+    "display": "Optometrist license number",
+    "definition": "A number that is unique to an individual optometrist within the jurisdiction of the licensing board.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number that is unique to an individual optometrist within the jurisdiction of the licensing board.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PA",
+    "display": "Physician Assistant number",
+    "definition": "An identifier that is unique to a physician assistant within the jurisdiction of a licensing board",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to a physician assistant within the jurisdiction of a licensing board",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Assistenzarztnummer"
+    }
+  },
+  {
+    "code": "PAYERID",
+    "display": "Payer Identifier",
+    "definition": "A unique identifier, usually assigned by a health plan or clearinghouse, used in electronic healthcare transactions to designate the specific health insurance company or plan that is the recipient or sender of the transaction.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PC",
+    "display": "Parole Card",
+    "definition": "A number identifying a person on parole.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number identifying a person on parole.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PCN",
+    "display": "Penitentiary/correctional institution Number",
+    "definition": "A number assigned to individual who is incarcerated.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number assigned to individual who is incarcerated.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PE",
+    "display": "Living Subject Enterprise Number",
+    "definition": "An identifier that is unique to a living subject within an enterprise (as identified by the Assigning Authority).",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to a living subject within an enterprise (as identified by the Assigning Authority).",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PEN",
+    "display": "Pension Number",
+    "definition": "Pension Number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PGN",
+    "display": "Placer Group Number",
+    "definition": "Unique identifier assigned to a group of orders by the placer application.",
+    "status": "N",
+    "v2ConceptComment": "This is analogous to the Placer Group Number ORC-4.",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PHC",
+    "display": "Public Health Case Identifier",
+    "definition": "Identifier assigned to a person during a case investigation as part of a public health event",
+    "status": "N",
+    "v2ConceptComment": "For example every person affected by the Norovirus outbreak on a cruise ship will be assigned a case ID for investigation and follow up",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PHE",
+    "display": "Public Health Event Identifier",
+    "definition": "Identifier assigned to an event of interest to public health",
+    "status": "N",
+    "v2ConceptComment": "For example an outbreak of Norovirus on a cruise ship – this is assigned by a public health jurisdiction at the local, state or federal level",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PHO",
+    "display": "Public Health Official ID",
+    "definition": "An identifier for a person working at a public health agency (PHA), assigned or issued by the agency",
+    "status": "N",
+    "v2ConceptComment": "May need to identify contact in a PHA that approved a test request or is in charge of an investigation.",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PI",
+    "display": "Patient internal identifier",
+    "definition": "A number that is unique to a patient within an Assigning Authority.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number that is unique to a patient within an Assigning Authority.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "interne Patienten-ID"
+    }
+  },
+  {
+    "code": "PIN",
+    "display": "Premises Identifier Number (US Official)",
+    "definition": "Identifier that uniquely identifies a geographic location in the US.",
+    "status": "N",
+    "v2ConceptComment": "The owner of the premises, or a person designated by the owner of the premises, can register his/her location. A premises identification number, or PIN, is then permanently assigned to that location associating it with the mailing address. If there is no mailing address at the property, geographic coordinates—latitude and longitude—can be used instead to describe the location. A premises identification number (PIN) is a unique, 7-digit code that includes both letters and numbers. Example: A123R69",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PKV",
+    "display": "Insured's ID with Private Insurance",
+    "definition": "Identifier that can be used to unambiguously describe the ID of a patient with a private insurance company.",
+    "status": "N",
+    "v2ConceptComment": "PKV is a patient ID with an private insurance company.",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PLAC",
+    "display": "Placer Identifier",
+    "definition": "An identifier for a request where the identifier is issued by the person or service making the request.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PN",
+    "display": "Person number",
+    "definition": "A number that is unique to a living subject within an Assigning Authority.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number that is unique to a living subject within an Assigning Authority.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Personen-ID"
+    }
+  },
+  {
+    "code": "PNT",
+    "display": "Temporary Living Subject Number",
+    "definition": "Temporary version of a Living Subject Number.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "Temporary version of a Lining Subject Number.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PPIN",
+    "display": "Medicare/CMS Performing Provider Identification Number",
+    "definition": "Medicare/CMS Performing Provider Identification Number",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance",
+    "v2ConceptCommentAsPublished": "Class: Insurance",
+    "hl7ConceptUsageNotes": "Class: Insurance"
+  },
+  {
+    "code": "PPN",
+    "display": "Passport number",
+    "definition": "A unique number assigned to the document affirming that a person is a citizen of the country.",
+    "status": "A",
+    "v2ConceptComment": "In the US this number is issued only by the State Department.",
+    "v2ConceptCommentAsPublished": "A unique number assigned to the document affirming that a person is a citizen of the country. In the US this number is issued only by the State Department.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Passnummer"
+    }
+  },
+  {
+    "code": "PRC",
+    "display": "Permanent Resident Card Number",
+    "definition": "Permanent Resident Card Number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PRN",
+    "display": "Provider number",
+    "definition": "A number that is unique to an individual provider, a provider group or an organization within an Assigning Authority.",
+    "status": "A",
+    "v2ConceptComment": "Use case: This allows PRN to represent either an individual (a nurse) or a group/organization (orthopedic surgery team).",
+    "v2ConceptCommentAsPublished": "A number that is unique to an individual provider, a provider group or an organization within an Assigning Authority.<p>Use case: This allows PRN to represent either an individual (a nurse) or a group/organization (orthopedic surgery team).",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "PT",
+    "display": "Patient external identifier",
+    "definition": "Patient external identifier",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "externe Patienten-ID"
+    }
+  },
+  {
+    "code": "QA",
+    "display": "QA number",
+    "definition": "QA number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "RI",
+    "display": "Resource identifier",
+    "definition": "A generalized resource identifier.",
+    "status": "A",
+    "v2ConceptComment": "Use Case: An identifier type is needed to accommodate what are commonly known as resources. The resources can include human (e.g. a respiratory therapist), non-human (e.g., a companion animal), inanimate object (e.g., an exam room), organization (e.g., diabetic education class) or any other physical or logical entity.",
+    "v2ConceptCommentAsPublished": "A generalized resource identifier. Use Case: An identifier type is needed to accommodate what are commonly known as resources. The resources can include human (e.g. a respiratory therapist), non-human (e.g., a companion animal), inanimate object (e.g., an exam room), organization (e.g., diabetic education class) or any other physical or logical entity.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "RN",
+    "display": "Registered Nurse Number",
+    "definition": "An identifier that is unique to a registered nurse within the jurisdiction of the licensing board.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to a registered nurse within the jurisdiction of the licensing board.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "RPH",
+    "display": "Pharmacist license number",
+    "definition": "An identifier that is unique to a pharmacist within the jurisdiction of the licensing board.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier that is unique to a pharmacist within the jurisdiction of the licensing board.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "RR",
+    "display": "Railroad Retirement number",
+    "definition": "An identifier for an individual enrolled with the Railroad Retirement Administration. Analogous to, but distinct from, a Social Security Number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "An identifier for an individual enrolled with the Railroad Retirement Administration. Analogous to, but distinct from, a Social Security Number",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Seniorenkartennummer"
+    }
+  },
+  {
+    "code": "RRI",
+    "display": "Regional registry ID",
+    "definition": "Regional registry ID",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "RRP",
+    "display": "Railroad Retirement Provider",
+    "definition": "Railroad Retirement Provider",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance",
+    "v2ConceptCommentAsPublished": "Class: Insurance",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "SAMN",
+    "display": "SAMN# accession Number",
+    "definition": "The accession number for the BioSample data repository at the National Center for Biotechnology Information (NCBI)",
+    "status": "N",
+    "v2ConceptComment": "This accession is a permanent record locator for the BioSample record which contains metadata about the biological sample.",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "SB",
+    "display": "Social Beneficiary Identifier",
+    "definition": "An identifier issued by a governmental organization to a person to identify the person should they apply for or receive social services and/or benefits",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "SID",
+    "display": "Specimen ID",
+    "definition": "Identifier for a specimen.",
+    "status": "A",
+    "v2ConceptComment": "Used when it is not known if the specimen ID is a unique specimen ID (USID) or an ancestor ID (ASID).",
+    "v2ConceptCommentAsPublished": "Identifier for a specimen. Used when it is not known if the specimen ID is a unique specimen ID (USID) or an ancestor ID (ASID).",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "SL",
+    "display": "State license",
+    "definition": "State license",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "SN",
+    "display": "Subscriber Number",
+    "definition": "An identifier for a subscriber of an insurance policy which is unique for, and usually assigned by, the insurance carrier.",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance Use Case: A person is the subscriber of an insurance policy. The person’s family may be plan members, but are not the subscriber.",
+    "v2ConceptCommentAsPublished": "Class: Insurance An identifier for a subscriber of an insurance policy which is unique for, and usually assigned by, the insurance carrier. Use Case: A person is the subscriber of an insurance policy. The person’s family may be plan members, but are not the subscriber.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "SNBSN",
+    "display": "State assigned NDBS card Identifier",
+    "definition": "The identifier on a Newborn Screening Dried Bloodspot (NDBS) card that is assigned by the state which provided the sample collection cards and to whom this information must be reported",
+    "status": "N",
+    "v2ConceptComment": "For use either with OBX-5 as CX datatype, where OBX-3 uses LOINC 57716-3^State printed on filter paper card [Identifier] in NBS card^LN, or in SPM-31",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "SNO",
+    "display": "Serial Number",
+    "definition": "An identifier affixed to an item by the manufacturer when it is first made, where each item has a different identifier.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "SP",
+    "display": "Study Permit",
+    "definition": "A number associated with a permit identifying a person who is a resident of a jurisdiction for the purpose of education.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number associated with a permit identifying a person who is a resident of a jurisdiction for the purpose of education.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "SR",
+    "display": "State registry ID",
+    "definition": "State registry ID",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "SRX",
+    "display": "SRA Accession number",
+    "definition": "The accession number generated by the Sequence Read Archive (SRA) at the National Center for Biotechnology Information (NCBI) when sequence data are uploaded to NCBI.",
+    "status": "N",
+    "v2ConceptComment": "This provides both the sequence data and metadata on how the sample was sequenced. – This accession is a permanent record locator for the submitted un-assembled sequence data.",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "SS",
+    "display": "Social Security number",
+    "definition": "Social Security number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Sozialversicherungsnummer"
+    }
+  },
+  {
+    "code": "STN",
+    "display": "Shipment Tracking Number",
+    "definition": "Identifier assigned to a package being shipped",
+    "status": "N",
+    "v2ConceptComment": "For example the Fed Ex / UPS / DHS / USPS tracking number",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "TAX",
+    "display": "Tax ID number",
+    "definition": "Tax ID number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Steueridentifikationsnummer"
+    }
+  },
+  {
+    "code": "TN",
+    "display": "Treaty Number/ (Canada)",
+    "definition": "A number assigned to a member of an indigenous group in Canada.",
+    "status": "A",
+    "v2ConceptComment": "Use Case: First Nation.",
+    "v2ConceptCommentAsPublished": "A number assigned to a member of an indigenous group in Canada.<p>Use Case: First Nation.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "TPR",
+    "display": "Temporary Permanent Resident (Canada)",
+    "definition": "A number associated with a document identifying a person's temporary permanent resident status.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number associated with a document identifying a person's temporary permanent resident status.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "TRL",
+    "display": "Training License Number",
+    "definition": "The license number used during training.",
+    "status": "N",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "U",
+    "display": "Unspecified identifier",
+    "definition": "Unspecified identifier",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "UDI",
+    "display": "Universal Device Identifier",
+    "definition": "An identifier assigned to a device using the Unique Device Identification framework as defined by IMDRF (http://imdrf.org).",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "UCID",
+    "display": "Unique Claim Identifier",
+    "definition": "A unique identifier assigned by a payer for a claim received from a provider or subscriber.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "UPIN",
+    "display": "Medicare/CMS (formerly HCFA)'s Universal Physician Identification numbers",
+    "definition": "An identifier for a provider within the CMS/Medicare program. A globally unique identifier for the provider in the Medicare program.",
+    "status": "A",
+    "v2ConceptComment": "Class: Insurance",
+    "v2ConceptCommentAsPublished": "Class: Insurance<p>An identifier for a provider within the CMS/Medicare program. A globally unique identifier for the provider in the Medicare program.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "USID",
+    "display": "Unique Specimen ID",
+    "definition": "A unique identifier for a specimen.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A unique identifier for a specimen.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "VN",
+    "display": "Visit number",
+    "definition": "Visit number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Fallnummer"
+    }
+  },
+  {
+    "code": "VP",
+    "display": "Visitor Permit",
+    "definition": "A number associated with a document identifying a person as a visitor of a jurisdiction or country.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number associated with a document identifying a person as a visitor of a jurisdiction or country.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Besucherkennung"
+    }
+  },
+  {
+    "code": "VS",
+    "display": "VISA",
+    "definition": "VISA",
+    "status": "A",
+    "v2ConceptComment": "Deprecated and replaced by BC in v 2.5.",
+    "v2ConceptCommentAsPublished": "Deprecated and replaced by BC in v 2.5.",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "VISA"
+    }
+  },
+  {
+    "code": "WC",
+    "display": "WIC identifier",
+    "definition": "WIC identifier",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "WCN",
+    "display": "Workers' Comp Number",
+    "definition": "Workers' Comp Number",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "WP",
+    "display": "Work Permit",
+    "definition": "A number associated with a permit for a person who is granted permission to work in a country for a specified time period.",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "A number associated with a permit for a person who is granted permission to work in a country for a specified time period.",
+    "hl7ConceptUsageNotes": ""
+  },
+  {
+    "code": "XV",
+    "display": "Health Plan Identifier",
+    "definition": "National unique health plan identifier required by the US Department of Health and Human Services, Centers for Medicare and Medicaid Services (CMS) in the US Realm.",
+    "status": "N",
+    "v2ConceptComment": "Also referred to as HPID (Health Plan Identifier).",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": "The code value ‘XV’ is used in CMS mandated Health Insurance Portability and Accountability Act (HIPAA) transactions."
+  },
+  {
+    "code": "XX",
+    "display": "Organization identifier",
+    "definition": "Organization identifier",
+    "status": "A",
+    "v2ConceptComment": "",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": "",
+    "translations": {
+      "de": "Organisations-ID"
+    }
+  },
+  {
+    "code": "ZANR",
+    "display": "Dentist Identifier",
+    "definition": "Identifier that can be used to unambiguously describe the ID of a dentist.",
+    "status": "N",
+    "v2ConceptComment": "ZANR is a dentist ID.",
+    "v2ConceptCommentAsPublished": "",
+    "hl7ConceptUsageNotes": ""
+  }
+]

@@ -1,0 +1,37 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.mrn | default: msg.MRN | default: msg.medicalRecordNumber | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient MRN: {{ msg.mrn | default: msg.MRN | default: msg.medicalRecordNumber }}{% if msg.patientName or msg.name %}, Name: {{ msg.patientName | default: msg.name }}{% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical record number"
+                    }
+                ]
+            },
+            "system": "http://hospital.smarthealthit.org",
+            "value": "{{ msg.mrn | default: msg.MRN | default: msg.medicalRecordNumber | default: msg.medical_record_number }}"
+        }
+    ],
+    "active": true,
+    {% if msg.patientName or msg.name -%}
+    "name": [
+        {
+            "use": "official",
+            "text": "{{ msg.patientName | default: msg.name }}"
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/hospital",
+        "display": "Hospital System"
+    }
+}

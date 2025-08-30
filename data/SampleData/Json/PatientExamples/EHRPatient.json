@@ -1,0 +1,27 @@
+{
+  "mrn": "MRN789012",
+  "demographics": {
+    "firstName": "Robert",
+    "lastName": "Johnson",
+    "dateOfBirth": "1978-11-30",
+    "gender": "M"
+  },
+  "identifiers": [
+    {
+      "type": "MRN",
+      "value": "MRN789012"
+    },
+    {
+      "type": "SSN", 
+      "value": "123-45-6789"
+    }
+  ],
+  "contactInfo": {
+    "primaryPhone": "555-9876",
+    "email": "robert.johnson@email.com"
+  },
+  "insurance": {
+    "provider": "Blue Cross",
+    "policyNumber": "BC123456789"
+  }
+}

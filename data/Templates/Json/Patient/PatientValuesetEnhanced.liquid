@@ -1,0 +1,184 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with valueset-validated fields</div>"
+    },
+    "active": true,
+    {% comment -%} Enhanced name with valueset validation {% endcomment -%}
+    "name": [
+        {
+            {% comment -%} Normalize name use with valueset {% endcomment -%}
+            {% assign nameUse = msg.nameType | default: msg.nameUse | default: 'official' | downcase -%}
+            {% case nameUse -%}
+                {% when 'legal' or 'primary' or 'main' -%}
+                    "use": "official",
+                {% when 'nick' or 'nickname' -%}
+                    "use": "nickname",
+                {% when 'preferred' or 'common' -%}
+                    "use": "usual",
+                {% when 'maiden' or 'birth' -%}
+                    "use": "maiden",
+                {% when 'temporary' -%}
+                    "use": "temp",
+                {% when 'old' or 'former' -%}
+                    "use": "old",
+                {% when 'anonymous' -%}
+                    "use": "anonymous",
+                {% else -%}
+                    "use": "official",
+            {% endcase -%}
+            {% if msg.lastName or msg.familyName -%}
+            "family": "{{ msg.lastName | default: msg.familyName }}",
+            {% endif -%}
+            {% if msg.firstName or msg.givenName -%}
+            "given": ["{{ msg.firstName | default: msg.givenName }}"]
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Enhanced telecom with valueset validation {% endcomment -%}
+    {% if msg.phone or msg.email or msg.fax -%}
+    "telecom": [
+        {% if msg.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.phone }}",
+            {% comment -%} Normalize contact point use with valueset {% endcomment -%}
+            {% assign phoneUse = msg.phoneType | default: msg.phoneUse | default: 'home' | downcase -%}
+            {% case phoneUse -%}
+                {% when 'personal' or 'primary' or 'residence' or 'residential' -%}
+                    "use": "home",
+                {% when 'business' or 'office' or 'workplace' or 'job' -%}
+                    "use": "work",
+                {% when 'emergency' or 'temporary' -%}
+                    "use": "temp",
+                {% when 'mobile' or 'cell' or 'cellular' -%}
+                    "use": "mobile",
+                {% else -%}
+                    "use": "home",
+            {% endcase -%}
+        }{% if msg.email or msg.fax %},{% endif %}
+        {% endif -%}
+        {% if msg.email -%}
+        {
+            "system": "email",
+            "value": "{{ msg.email }}",
+            {% assign emailUse = msg.emailType | default: msg.emailUse | default: 'home' | downcase -%}
+            {% case emailUse -%}
+                {% when 'personal' or 'primary' -%}
+                    "use": "home",
+                {% when 'business' or 'work' or 'office' -%}
+                    "use": "work",
+                {% else -%}
+                    "use": "home",
+            {% endcase -%}
+        }{% if msg.fax %},{% endif %}
+        {% endif -%}
+        {% if msg.fax -%}
+        {
+            "system": "fax",
+            "value": "{{ msg.fax }}",
+            "use": "work"
+        }
+        {% endif -%}
+    ],
+    {% endif -%}
+    {% comment -%} Enhanced address with valueset validation {% endcomment -%}
+    {% if msg.street or msg.address or msg.city -%}
+    "address": [
+        {
+            {% comment -%} Normalize address use with valueset {% endcomment -%}
+            {% assign addressUse = msg.addressType | default: msg.addressUse | default: 'home' | downcase -%}
+            {% case addressUse -%}
+                {% when 'personal' or 'residence' or 'residential' or 'primary' -%}
+                    "use": "home",
+                {% when 'business' or 'office' or 'workplace' or 'job' -%}
+                    "use": "work",
+                {% when 'temporary' or 'current' -%}
+                    "use": "temp",
+                {% when 'billing' or 'invoice' or 'payment' -%}
+                    "use": "billing",
+                {% when 'previous' or 'former' or 'old' -%}
+                    "use": "old",
+                {% else -%}
+                    "use": "home",
+            {% endcase -%}
+            {% comment -%} Normalize address type with valueset {% endcomment -%}
+            {% assign addrType = msg.addressCategory | default: 'both' | downcase -%}
+            {% case addrType -%}
+                {% when 'mailing' or 'mail' or 'shipping' or 'delivery' -%}
+                    "type": "postal",
+                {% when 'street' or 'residence' or 'location' or 'building' -%}
+                    "type": "physical",
+                {% else -%}
+                    "type": "both",
+            {% endcase -%}
+            {% if msg.street or msg.address -%}
+            "line": ["{{ msg.street | default: msg.address }}"],
+            {% endif -%}
+            {% if msg.city -%}
+            "city": "{{ msg.city }}",
+            {% endif -%}
+            {% if msg.state -%}
+            "state": "{{ msg.state }}",
+            {% endif -%}
+            {% if msg.zip or msg.zipCode -%}
+            "postalCode": "{{ msg.zip | default: msg.zipCode }}",
+            {% endif -%}
+            {% if msg.country -%}
+            "country": "{{ msg.country }}"
+            {% endif -%}
+        }
+    ],
+    {% endif -%}
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    {% comment -%} Enhanced gender with valueset validation {% endcomment -%}
+    {% if msg.gender or msg.sex -%}
+    {% assign genderInput = msg.gender | default: msg.sex | downcase -%}
+    "gender": {% case genderInput -%}
+        {% when 'm' or 'male' or 'man' -%}"male"
+        {% when 'f' or 'female' or 'woman' -%}"female"  
+        {% when 'o' or 'other' -%}"other"
+        {% when 'u' or 'unknown' or 'n/a' or 'na' or 'null' or '' -%}"unknown"
+        {% else -%}"unknown"
+    {% endcase -%},
+    {% endif -%}
+    {% comment -%} Enhanced marital status with valueset validation {% endcomment -%}
+    {% if msg.maritalStatus or msg.marriageStatus -%}
+    {% assign marital = msg.maritalStatus | default: msg.marriageStatus | downcase -%}
+    "maritalStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+                {% case marital -%}
+                    {% when 'single' or 'never married' or 'unmarried' -%}
+                        "code": "S",
+                        "display": "Never Married"
+                    {% when 'married' or 'wed' -%}
+                        "code": "M", 
+                        "display": "Married"
+                    {% when 'divorced' or 'div' -%}
+                        "code": "D",
+                        "display": "Divorced"
+                    {% when 'widowed' or 'widow' or 'widower' -%}
+                        "code": "W",
+                        "display": "Widowed"
+                    {% when 'separated' or 'sep' -%}
+                        "code": "L",
+                        "display": "Legally Separated"
+                    {% else -%}
+                        "code": "UNK",
+                        "display": "Unknown"
+                {% endcase -%}
+            }
+        ]
+    },
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/valueset-enhanced",
+        "display": "Valueset-Enhanced Healthcare System"
+    }
+}

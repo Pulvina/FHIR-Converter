@@ -64,7 +64,24 @@ export const apiService = {
 
   // Get sample file content
   getSampleContent: async (inputType: InputType, filename: string): Promise<SampleContent> => {
-    const response = await api.get(`/api/samples/${inputType}/${filename}`);
+    const encodedFilename = encodeURIComponent(filename);
+    const response = await api.get(`/api/samples/${inputType}/${encodedFilename}`);
+    return response.data;
+  },
+
+  // FHIR Validation methods
+  validateResource: async (resource: any) => {
+    const response = await api.post('/api/validate/resource', { resource });
+    return response.data;
+  },
+
+  validateResources: async (resources: any[]) => {
+    const response = await api.post('/api/validate/resources', { resources });
+    return response.data;
+  },
+
+  validateBundle: async (bundle: any) => {
+    const response = await api.post('/api/validate/bundle', { bundle });
     return response.data;
   },
 };

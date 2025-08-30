@@ -1,0 +1,120 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.patient.id | default: msg.patient.patientId | default: msg.id | default: msg.patientInfo.id | to_json_string | generate_uuid }}",
+    {% comment -%} Generate narrative text for FHIR compliance {% endcomment -%}
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient {% if msg.patient.name.first or msg.name.first or msg.patient.firstName or msg.name.given %}{{ msg.patient.name.first | default: msg.name.first | default: msg.patient.firstName | default: msg.name.given }}{% endif %} {% if msg.patient.name.last or msg.name.last or msg.patient.lastName or msg.name.family %}{{ msg.patient.name.last | default: msg.name.last | default: msg.patient.lastName | default: msg.name.family }}{% endif %}{% if msg.patient.birthDate or msg.demographics.birthDate or msg.patient.dob %}, DOB: {{ msg.patient.birthDate | default: msg.demographics.birthDate | default: msg.patient.dob }}{% endif %}{% if msg.patient.demographics.gender or msg.demographics.gender %}, Gender: {{ msg.patient.demographics.gender | default: msg.demographics.gender }}{% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "urn:oid:2.16.840.1.113883.19.5",
+            "value": "{{ msg.patient.id | default: msg.patient.patientId | default: msg.id | default: msg.patientInfo.id | default: msg.patient.mrn }}"
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "{{ msg.patient.name.last | default: msg.name.last | default: msg.patient.lastName | default: msg.name.family }}",
+            "given": [
+                "{{ msg.patient.name.first | default: msg.name.first | default: msg.patient.firstName | default: msg.name.given }}"
+            ]
+        }
+    ],
+    {% comment -%} Handle nested contact information {% endcomment -%}
+    {% if msg.contact.phone or msg.patient.contact.phone or msg.contact.phoneNumbers or msg.phoneNumbers or msg.contact.email or msg.patient.contact.email -%}
+    "telecom": [
+        {% if msg.contact.phone or msg.patient.contact.phone -%}
+        {% if msg.contact.phone.size > 1 or msg.patient.contact.phone.size > 1 -%}
+        {% for phone in msg.contact.phone | default: msg.patient.contact.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ phone }}",
+            "use": {% if forloop.first %}"home"{% else %}"work"{% endif %}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+        {% else -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.contact.phone | default: msg.patient.contact.phone }}",
+            "use": "home"
+        }
+        {% endif -%}
+        {% elsif msg.contact.phoneNumbers or msg.phoneNumbers -%}
+        {% for phone in msg.contact.phoneNumbers | default: msg.phoneNumbers -%}
+        {
+            "system": "phone",
+            "value": "{{ phone }}",
+            "use": {% if forloop.first %}"home"{% else %}"work"{% endif %}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+        {% endif -%}
+        {% if msg.contact.email or msg.patient.contact.email -%}
+        {% if msg.contact.phone or msg.patient.contact.phone or msg.contact.phoneNumbers or msg.phoneNumbers %},{% endif %}
+        {
+            "system": "email",
+            "value": "{{ msg.contact.email | default: msg.patient.contact.email }}"
+        }
+        {% endif -%}
+    ],
+    {% endif -%}
+    {% comment -%} Handle gender from nested demographics {% endcomment -%}
+    {% if msg.patient.demographics.gender or msg.demographics.gender -%}
+    "gender": {% assign genderValue = msg.patient.demographics.gender | default: msg.demographics.gender -%}
+        {% if genderValue == 'M' or genderValue == 'Male' or genderValue == 'male' -%}
+            "male"
+        {% elsif genderValue == 'F' or genderValue == 'Female' or genderValue == 'female' -%}
+            "female"
+        {% elsif genderValue == 'U' or genderValue == 'Unknown' or genderValue == 'unknown' -%}
+            "unknown"
+        {% else -%}
+            "other"
+        {% endif -%},
+    {% endif -%}
+    {% comment -%} Handle birth date from nested structures {% endcomment -%}
+    {% if msg.patient.birthDate or msg.demographics.birthDate or msg.patient.dob or msg.patient.demographics.birthDate -%}
+    "birthDate": "{{ msg.patient.birthDate | default: msg.demographics.birthDate | default: msg.patient.dob | default: msg.patient.demographics.birthDate }}",
+    {% endif -%}
+    {% comment -%} Handle nested address information {% endcomment -%}
+    {% if msg.contact.address or msg.patient.contact.address -%}
+    "address": [
+        {
+            "use": "home",
+            "type": "physical",
+            {% if msg.contact.address.street or msg.patient.contact.address.street -%}
+            "line": [
+                "{{ msg.contact.address.street | default: msg.patient.contact.address.street }}"
+            ],
+            {% endif -%}
+            {% if msg.contact.address.city or msg.patient.contact.address.city -%}
+            "city": "{{ msg.contact.address.city | default: msg.patient.contact.address.city }}",
+            {% endif -%}
+            {% if msg.contact.address.state or msg.patient.contact.address.state -%}
+            "state": "{{ msg.contact.address.state | default: msg.patient.contact.address.state }}",
+            {% endif -%}
+            {% if msg.contact.address.zipCode or msg.patient.contact.address.zipCode -%}
+            "postalCode": "{{ msg.contact.address.zipCode | default: msg.patient.contact.address.zipCode }}",
+            {% endif -%}
+            {% if msg.contact.address.country or msg.patient.contact.address.country -%}
+            "country": "{{ msg.contact.address.country | default: msg.patient.contact.address.country }}"
+            {% else -%}
+            "country": "USA"
+            {% endif -%}
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/2.16.840.1.113883.19.5",
+        "display": "Good Health Clinic"
+    }
+}

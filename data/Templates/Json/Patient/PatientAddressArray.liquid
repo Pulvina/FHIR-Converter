@@ -1,0 +1,91 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with address array</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Address array handling {% endcomment -%}
+    "address": [
+        {% if msg.addresses -%}
+        {% for address in msg.addresses -%}
+        {
+            "use": "{{ address.type | default: address.use | default: 'home' | downcase }}",
+            {% if address.type and address.type == 'billing' -%}
+            "type": "postal",
+            {% elsif address.type and address.type == 'shipping' -%}
+            "type": "physical",
+            {% endif -%}
+            {% if address.street or address.line1 or address.address -%}
+            "line": [
+                "{{ address.street | default: address.line1 | default: address.address }}"
+                {% if address.line2 or address.apt or address.unit -%}
+                ,"{{ address.line2 | default: address.apt | default: address.unit }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if address.city -%}
+            "city": "{{ address.city }}",
+            {% endif -%}
+            {% if address.state or address.province -%}
+            "state": "{{ address.state | default: address.province }}",
+            {% endif -%}
+            {% if address.zip or address.zipCode or address.postalCode -%}
+            "postalCode": "{{ address.zip | default: address.zipCode | default: address.postalCode }}",
+            {% endif -%}
+            {% if address.country -%}
+            "country": "{{ address.country }}"
+            {% endif -%}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+        {% elsif msg.addressList -%}
+        {% for addr in msg.addressList -%}
+        {
+            "use": "{{ addr.addressType | default: 'home' | downcase }}",
+            {% if addr.fullAddress -%}
+            "text": "{{ addr.fullAddress }}",
+            {% endif -%}
+            {% if addr.streetAddress or addr.line -%}
+            "line": [
+                "{{ addr.streetAddress | default: addr.line }}"
+            ],
+            {% endif -%}
+            {% if addr.cityName -%}
+            "city": "{{ addr.cityName }}",
+            {% endif -%}
+            {% if addr.stateName or addr.stateCode -%}
+            "state": "{{ addr.stateName | default: addr.stateCode }}",
+            {% endif -%}
+            {% if addr.postalCode -%}
+            "postalCode": "{{ addr.postalCode }}",
+            {% endif -%}
+            {% if addr.countryName or addr.countryCode -%}
+            "country": "{{ addr.countryName | default: addr.countryCode }}"
+            {% endif -%}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+        {% endif -%}
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/address-arrays",
+        "display": "Address Array Healthcare System"
+    }
+}

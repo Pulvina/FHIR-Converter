@@ -1,0 +1,84 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.insuranceId | default: msg.memberId | default: msg.policyNumber | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient Insurance ID: {{ msg.insuranceId | default: msg.memberId | default: msg.policyNumber }}{% if msg.insuranceProvider or msg.insurer %}, Provider: {{ msg.insuranceProvider | default: msg.insurer }}{% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "secondary",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MB",
+                        "display": "Member number"
+                    }
+                ]
+            },
+            {% if msg.insuranceProvider or msg.insurer -%}
+            "system": "http://{{ msg.insuranceProvider | default: msg.insurer | downcase | replace: ' ', '' }}.com/memberId",
+            {% else -%}
+            "system": "http://insurance.com/memberId",
+            {% endif -%}
+            "value": "{{ msg.insuranceId | default: msg.memberId | default: msg.policyNumber | default: msg.insurance_id }}",
+            "assigner": {
+                "display": "{{ msg.insuranceProvider | default: msg.insurer | default: 'Insurance Company' }}"
+            }
+        },
+        {% if msg.groupNumber or msg.groupId -%}
+        {
+            "use": "secondary",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "GN",
+                        "display": "Group number"
+                    }
+                ]
+            },
+            "value": "{{ msg.groupNumber | default: msg.groupId }}"
+        }
+        {% endif -%}
+    ],
+    "active": true,
+    {% if msg.subscriberName or msg.memberName or msg.name -%}
+    "name": [
+        {
+            "use": "official",
+            "text": "{{ msg.subscriberName | default: msg.memberName | default: msg.name }}"
+        }
+    ],
+    {% endif -%}
+    {% if msg.dateOfBirth or msg.dob -%}
+    "birthDate": "{{ msg.dateOfBirth | default: msg.dob }}",
+    {% endif -%}
+    {% comment -%} Insurance coverage extension {% endcomment -%}
+    {% if msg.coverageType or msg.planType or msg.effectiveDate -%}
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-insurance",
+            "extension": [
+                {% if msg.coverageType or msg.planType -%}
+                {
+                    "url": "coverage-type",
+                    "valueString": "{{ msg.coverageType | default: msg.planType }}"
+                },
+                {% endif -%}
+                {% if msg.effectiveDate -%}
+                {
+                    "url": "effective-date",
+                    "valueDate": "{{ msg.effectiveDate }}"
+                }
+                {% endif -%}
+            ]
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/insurance",
+        "display": "{{ msg.insuranceProvider | default: msg.insurer | default: 'Insurance Provider' }}"
+    }
+}

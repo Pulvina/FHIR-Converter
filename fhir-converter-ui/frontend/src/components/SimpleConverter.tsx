@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, FileText, Database, ArrowRight, Loader2, Download, Check } from 'lucide-react';
+import { Upload, FileText, Database, ArrowRight, Loader2, Download, Check, Shield, AlertTriangle, AlertCircle } from 'lucide-react';
 import { ConversionRequest, ConversionResult, Template, SampleFile, InputType, OutputFormat } from '../types';
 import { apiService } from '../services/api';
 import './SimpleConverter.css';
@@ -23,6 +23,12 @@ const SimpleConverter: React.FC = () => {
   const [result, setResult] = useState<ConversionResult | null>(null);
   const [error, setError] = useState<string>('');
   const [isCopied, setIsCopied] = useState(false);
+  const [sampleContent, setSampleContent] = useState<string>('');
+  
+  // Validation state
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationResult, setValidationResult] = useState<any>(null);
+  const [validationError, setValidationError] = useState<string>('');
 
   // Load templates when input type changes
   useEffect(() => {
@@ -54,9 +60,29 @@ const SimpleConverter: React.FC = () => {
     loadSamples();
   }, [inputType]);
 
+  // Load sample content when sample is selected
+  useEffect(() => {
+    const loadSampleContent = async () => {
+      if (selectedSample && inputMode === 'sample') {
+        try {
+          const response = await apiService.getSampleContent(inputType, selectedSample);
+          setSampleContent(response.content);
+        } catch (err) {
+          console.error('Failed to load sample content:', err);
+          setSampleContent('');
+        }
+      } else {
+        setSampleContent('');
+      }
+    };
+    loadSampleContent();
+  }, [selectedSample, inputType, inputMode]);
+
   const handleConvert = async () => {
     setError('');
     setResult(null);
+    setValidationResult(null);
+    setValidationError('');
     setIsConverting(true);
 
     try {
@@ -91,6 +117,28 @@ const SimpleConverter: React.FC = () => {
       setError(errorMessage);
     } finally {
       setIsConverting(false);
+    }
+  };
+
+  const handleValidate = async () => {
+    if (!result || !result.success) {
+      setValidationError('No successful conversion result to validate');
+      return;
+    }
+
+    setValidationError('');
+    setValidationResult(null);
+    setIsValidating(true);
+
+    try {
+      const response = await apiService.validateResource(result.data);
+      setValidationResult(response.validation);
+    } catch (err: any) {
+      console.error('Validation failed:', err);
+      const errorMessage = err.response?.data?.error || err.message || 'Validation failed';
+      setValidationError(errorMessage);
+    } finally {
+      setIsValidating(false);
     }
   };
 
@@ -239,7 +287,17 @@ const SimpleConverter: React.FC = () => {
                     ))}
                   </select>
                   {selectedSample && (
-                    <p className="input-hint">Using sample: {samples.find(s => s.name === selectedSample)?.displayName}</p>
+                    <div className="sample-preview">
+                      <div className="sample-preview-header">
+                        <span className="sample-name">Sample: {samples.find(s => s.name === selectedSample)?.displayName}</span>
+                        <span className="sample-size">{sampleContent.length} characters</span>
+                      </div>
+                      {sampleContent && (
+                        <div className="sample-content">
+                          <pre className="sample-code">{sampleContent}</pre>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               )}
@@ -359,6 +417,23 @@ const SimpleConverter: React.FC = () => {
                         <Download size={16} />
                         Download JSON
                       </button>
+                      <button 
+                        onClick={handleValidate}
+                        disabled={isValidating}
+                        className="action-button validate-button"
+                      >
+                        {isValidating ? (
+                          <>
+                            <Loader2 size={16} className="animate-spin" />
+                            Validating...
+                          </>
+                        ) : (
+                          <>
+                            <Shield size={16} />
+                            Validate FHIR
+                          </>
+                        )}
+                      </button>
                     </div>
                   </div>
                   <pre className="result-data">
@@ -367,6 +442,85 @@ const SimpleConverter: React.FC = () => {
                       : JSON.stringify(result.data, null, 2)
                     }
                   </pre>
+
+                  {/* Validation Results */}
+                  {validationResult && (
+                    <div className="validation-results">
+                      <div className="validation-header">
+                        <h3>
+                          {validationResult.valid ? (
+                            <>
+                              <Shield size={16} className="validation-icon valid" />
+                              FHIR Validation: Valid
+                            </>
+                          ) : (
+                            <>
+                              <AlertTriangle size={16} className="validation-icon invalid" />
+                              FHIR Validation: Invalid
+                            </>
+                          )}
+                        </h3>
+                      </div>
+
+                      {validationResult.errors && validationResult.errors.length > 0 && (
+                        <div className="validation-section">
+                          <h4 className="validation-subheader">
+                            <AlertCircle size={14} />
+                            Errors ({validationResult.errors.length})
+                          </h4>
+                          <ul className="validation-list errors">
+                            {validationResult.errors.map((error: any, index: number) => (
+                              <li key={index} className="validation-item error">
+                                <span className="validation-message">{error.message}</span>
+                                {error.path && <span className="validation-path">at {error.path}</span>}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {validationResult.warnings && validationResult.warnings.length > 0 && (
+                        <div className="validation-section">
+                          <h4 className="validation-subheader">
+                            <AlertTriangle size={14} />
+                            Warnings ({validationResult.warnings.length})
+                          </h4>
+                          <ul className="validation-list warnings">
+                            {validationResult.warnings.map((warning: any, index: number) => (
+                              <li key={index} className="validation-item warning">
+                                <span className="validation-message">{warning.message}</span>
+                                {warning.path && <span className="validation-path">at {warning.path}</span>}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {validationResult.valid && 
+                       validationResult.errors.length === 0 && 
+                       validationResult.warnings.length === 0 && (
+                        <div className="validation-section">
+                          <p className="validation-success">
+                            ✓ The FHIR resource passed all validation checks
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {validationError && (
+                    <div className="validation-results">
+                      <div className="validation-header">
+                        <h3>
+                          <AlertCircle size={16} className="validation-icon invalid" />
+                          Validation Error
+                        </h3>
+                      </div>
+                      <div className="validation-error">
+                        {validationError}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="error-result">

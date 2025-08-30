@@ -1,0 +1,84 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.patients[0].patientId | default: msg.patients[0].id | default: msg.patients.0.patientId | default: msg.patients.0.id | to_json_string | generate_uuid }}",
+    {% comment -%} Generate narrative text for FHIR compliance {% endcomment -%}
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient {% if msg.patients[0].givenName or msg.patients[0].firstName %}{{ msg.patients[0].givenName | default: msg.patients[0].firstName }}{% endif %} {% if msg.patients[0].familyName or msg.patients[0].lastName %}{{ msg.patients[0].familyName | default: msg.patients[0].lastName }}{% endif %}{% if msg.patients[0].birthDate %}, DOB: {{ msg.patients[0].birthDate }}{% endif %}{% if msg.patients[0].sex or msg.patients[0].gender %}, Gender: {{ msg.patients[0].sex | default: msg.patients[0].gender }}{% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "urn:oid:2.16.840.1.113883.19.5",
+            "value": "{{ msg.patients[0].patientId | default: msg.patients[0].id | default: msg.patients.0.patientId | default: msg.patients.0.id }}"
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "{{ msg.patients[0].familyName | default: msg.patients[0].lastName | default: msg.patients.0.familyName | default: msg.patients.0.lastName }}",
+            "given": [
+                "{{ msg.patients[0].givenName | default: msg.patients[0].firstName | default: msg.patients.0.givenName | default: msg.patients.0.firstName }}"
+            ]
+        }
+    ],
+    {% comment -%} Handle phone numbers from array {% endcomment -%}
+    {% if msg.patients[0].phoneNumbers.size > 0 or msg.patients.0.phoneNumbers.size > 0 -%}
+    "telecom": [
+        {% for phone in msg.patients[0].phoneNumbers | default: msg.patients.0.phoneNumbers -%}
+        {
+            "system": "phone",
+            "value": "{{ phone }}",
+            "use": {% if forloop.first %}"home"{% else %}"work"{% endif %}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+    ],
+    {% elsif msg.patients[0].phone or msg.patients.0.phone -%}
+    "telecom": [
+        {
+            "system": "phone",
+            "value": "{{ msg.patients[0].phone | default: msg.patients.0.phone }}",
+            "use": "home"
+        }
+    ],
+    {% endif -%}
+    {% comment -%} Handle gender from array {% endcomment -%}
+    {% assign arrayGender = msg.patients[0].sex | default: msg.patients[0].gender | default: msg.patients.0.sex | default: msg.patients.0.gender -%}
+    {% if arrayGender -%}
+    "gender": {% if arrayGender == 'M' or arrayGender == 'Male' or arrayGender == 'male' -%}
+        "male"
+    {% elsif arrayGender == 'F' or arrayGender == 'Female' or arrayGender == 'female' -%}
+        "female"
+    {% elsif arrayGender == 'U' or arrayGender == 'Unknown' or arrayGender == 'unknown' -%}
+        "unknown"
+    {% else -%}
+        "other"
+    {% endif -%},
+    {% endif -%}
+    {% comment -%} Handle birth date from array {% endcomment -%}
+    {% if msg.patients[0].birthDate or msg.patients[0].dob or msg.patients.0.birthDate or msg.patients.0.dob -%}
+    "birthDate": "{{ msg.patients[0].birthDate | default: msg.patients[0].dob | default: msg.patients.0.birthDate | default: msg.patients.0.dob }}",
+    {% endif -%}
+    {% comment -%} Add facility information if available {% endcomment -%}
+    {% if msg.facilityInfo.name -%}
+    "extension": [
+        {
+            "url": "http://example.org/fhir/StructureDefinition/source-facility",
+            "valueString": "{{ msg.facilityInfo.name }} (ID: {{ msg.facilityInfo.id }})"
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/{{ msg.facilityInfo.id | default: '2.16.840.1.113883.19.5' }}",
+        "display": "{{ msg.facilityInfo.name | default: 'Good Health Clinic' }}"
+    }
+}

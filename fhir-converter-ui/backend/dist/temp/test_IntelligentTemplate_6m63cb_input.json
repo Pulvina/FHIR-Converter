@@ -1,0 +1,12 @@
+{
+  "formId": "intake-555",
+  "patientDetails": {
+    "fullName": "Alexander Petrov",
+    "dob": "1965-05-04",
+    "sex": "M"
+  },
+  "chiefComplaint": "Persistent cough and fatigue",
+  "historyNotes": "Smoker, 20 pack-years. Recently returned from abroad.",
+  "medications": "None reported",
+  "allergies": "Penicillin"
+}

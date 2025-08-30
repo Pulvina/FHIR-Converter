@@ -1,0 +1,176 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.patientInfo.id | default: msg.id | to_json_string | generate_uuid }}",
+    {% comment -%} Generate comprehensive narrative text {% endcomment -%}
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient {{ msg.patientInfo.personalDetails.name.family | default: msg.personalDetails.name.family }}{% if msg.patientInfo.personalDetails.birthInfo.date or msg.personalDetails.birthInfo.date %}, DOB: {{ msg.patientInfo.personalDetails.birthInfo.date | default: msg.personalDetails.birthInfo.date }}{% endif %}{% if msg.patientInfo.personalDetails.gender or msg.personalDetails.gender %}, Gender: {{ msg.patientInfo.personalDetails.gender | default: msg.personalDetails.gender }}{% endif %}</div>"
+    },
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR"
+                    }
+                ]
+            },
+            "system": "urn:oid:2.16.840.1.113883.19.5",
+            "value": "{{ msg.patientInfo.id | default: msg.id }}"
+        }
+    ],
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            "family": "{{ msg.patientInfo.personalDetails.name.family | default: msg.personalDetails.name.family }}",
+            {% if msg.patientInfo.personalDetails.name.given or msg.personalDetails.name.given -%}
+            "given": [
+                {% assign givenNames = msg.patientInfo.personalDetails.name.given | default: msg.personalDetails.name.given -%}
+                {% for givenName in givenNames -%}
+                "{{ givenName }}"{% unless forloop.last %},{% endunless %}
+                {% endfor -%}
+            ]
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Handle complex contact details array - very simplified {% endcomment -%}
+    {% if msg.patientInfo.contactDetails.size > 0 or msg.contactDetails.size > 0 -%}
+    "telecom": [
+        {% comment -%} Try to find phone contacts first {% endcomment -%}
+        {% for contact in msg.patientInfo.contactDetails | default: msg.contactDetails -%}
+        {% if contact.type == 'home' and contact.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ contact.phone }}",
+            "use": "home",
+            "rank": 1
+        },
+        {% break -%}
+        {% endif -%}
+        {% endfor -%}
+        {% for contact in msg.patientInfo.contactDetails | default: msg.contactDetails -%}
+        {% if contact.type == 'work' and contact.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ contact.phone }}",
+            "use": "work",
+            "rank": 2
+        },
+        {% break -%}
+        {% endif -%}
+        {% endfor -%}
+        {% comment -%} Find email contact {% endcomment -%}
+        {% for contact in msg.patientInfo.contactDetails | default: msg.contactDetails -%}
+        {% if contact.type == 'email' -%}
+        {
+            "system": "email",
+            "value": "{{ contact.value }}"
+        }
+        {% break -%}
+        {% endif -%}
+        {% endfor -%}
+    ],
+    {% endif -%}
+    {% comment -%} Handle gender from deep nested structure {% endcomment -%}
+    {% assign genderValue = msg.patientInfo.personalDetails.gender | default: msg.personalDetails.gender -%}
+    {% if genderValue -%}
+    "gender": {% if genderValue == 'male' or genderValue == 'M' or genderValue == 'Male' -%}
+        "male"
+    {% elsif genderValue == 'female' or genderValue == 'F' or genderValue == 'Female' -%}
+        "female"
+    {% elsif genderValue == 'unknown' or genderValue == 'U' or genderValue == 'Unknown' -%}
+        "unknown"
+    {% else -%}
+        "other"
+    {% endif -%},
+    {% endif -%}
+    {% comment -%} Handle birth date from birth info {% endcomment -%}
+    {% if msg.patientInfo.personalDetails.birthInfo.date or msg.personalDetails.birthInfo.date -%}
+    "birthDate": "{{ msg.patientInfo.personalDetails.birthInfo.date | default: msg.personalDetails.birthInfo.date }}",
+    {% endif -%}
+    {% comment -%} Handle birth place as extension {% endcomment -%}
+    {% assign birthPlace = msg.patientInfo.personalDetails.birthInfo.place | default: msg.personalDetails.birthInfo.place -%}
+    {% assign maritalStatus = msg.patientInfo.personalDetails.maritalStatus | default: msg.personalDetails.maritalStatus -%}
+    {% assign hasMedicalInfo = false -%}
+    {% if msg.medicalInfo.primaryPhysician or msg.medicalInfo.allergies.size > 0 or msg.medicalInfo.conditions.size > 0 -%}
+    {% assign hasMedicalInfo = true -%}
+    {% endif -%}
+    {% if birthPlace or hasMedicalInfo -%}
+    "extension": [
+        {% if birthPlace -%}
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-birthPlace",
+            "valueAddress": {
+                "text": "{{ birthPlace }}"
+            }
+        }{% if hasMedicalInfo %},{% endif %}
+        {% endif -%}
+        {% if msg.medicalInfo.primaryPhysician -%}
+        {
+            "url": "http://example.org/fhir/StructureDefinition/primary-physician",
+            "valueString": "{{ msg.medicalInfo.primaryPhysician }}"
+        }{% if msg.medicalInfo.allergies.size > 0 or msg.medicalInfo.conditions.size > 0 %},{% endif %}
+        {% endif -%}
+        {% if msg.medicalInfo.allergies.size > 0 -%}
+        {
+            "url": "http://example.org/fhir/StructureDefinition/allergies",
+            "valueString": "{% for allergy in msg.medicalInfo.allergies %}{{ allergy }}{% unless forloop.last %}, {% endunless %}{% endfor %}"
+        }{% if msg.medicalInfo.conditions.size > 0 %},{% endif %}
+        {% endif -%}
+        {% if msg.medicalInfo.conditions.size > 0 -%}
+        {
+            "url": "http://example.org/fhir/StructureDefinition/conditions",
+            "valueString": "{% for condition in msg.medicalInfo.conditions %}{{ condition }}{% unless forloop.last %}, {% endunless %}{% endfor %}"
+        }
+        {% endif -%}
+    ],
+    {% endif -%}
+    {% comment -%} Handle marital status {% endcomment -%}
+    {% if maritalStatus -%}
+    "maritalStatus": {
+        "coding": [
+            {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+                "code": "{% if maritalStatus == 'married' or maritalStatus == 'Married' -%}M{% elsif maritalStatus == 'single' or maritalStatus == 'Single' -%}S{% elsif maritalStatus == 'divorced' or maritalStatus == 'Divorced' -%}D{% elsif maritalStatus == 'widowed' or maritalStatus == 'Widowed' -%}W{% else -%}UNK{% endif %}",
+                "display": "{{ maritalStatus | capitalize }}"
+            }
+        ]
+    },
+    {% endif -%}
+    {% comment -%} Handle addresses array - simplified {% endcomment -%}
+    {% assign addresses = msg.patientInfo.addresses | default: msg.addresses -%}
+    {% if addresses.size > 0 -%}
+    "address": [
+        {% for address in addresses -%}
+        {
+            "use": "{{ address.type | default: 'home' }}",
+            "type": "physical",
+            {% if address.street.size > 0 -%}
+            "line": [
+                {% for line in address.street -%}
+                "{{ line }}"{% unless forloop.last %},{% endunless %}
+                {% endfor -%}
+            ],
+            {% endif -%}
+            {% if address.city -%}
+            "city": "{{ address.city }}",
+            {% endif -%}
+            {% if address.state -%}
+            "state": "{{ address.state }}",
+            {% endif -%}
+            {% if address.postalCode -%}
+            "postalCode": "{{ address.postalCode }}",
+            {% endif -%}
+            "country": "{{ address.country | default: 'USA' }}"
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/2.16.840.1.113883.19.5",
+        "display": "Good Health Clinic"
+    }
+}

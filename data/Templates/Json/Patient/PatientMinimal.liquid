@@ -1,0 +1,100 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | default: msg.patient_id | to_json_string | generate_uuid }}",
+    {% comment -%} Generate basic narrative text {% endcomment -%}
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient {% if msg.name %}{{ msg.name }}{% else %}{{ msg.firstName | default: msg.first_name }} {{ msg.lastName | default: msg.last_name }}{% endif %}{% if msg.dob or msg.dateOfBirth %}, DOB: {{ msg.dob | default: msg.dateOfBirth }}{% endif %}{% if msg.id or msg.patientId %}, ID: {{ msg.id | default: msg.patientId }}{% endif %}</div>"
+    },
+    {% comment -%} Minimal identifier {% endcomment -%}
+    {% if msg.id or msg.patientId or msg.patient_id -%}
+    "identifier": [
+        {
+            "use": "usual",
+            "value": "{{ msg.id | default: msg.patientId | default: msg.patient_id }}"
+        }
+    ],
+    {% endif -%}
+    "active": true,
+    {% comment -%} Handle name variations - single field or split fields {% endcomment -%}
+    {% if msg.name -%}
+    "name": [
+        {
+            "use": "official",
+            {% comment -%} Parse full name into given and family parts {% endcomment -%}
+            {% assign nameParts = msg.name | split: ' ' -%}
+            {% if nameParts.size == 2 -%}
+            "family": "{{ nameParts[1] }}",
+            "given": [
+                "{{ nameParts[0] }}"
+            ]
+            {% elsif nameParts.size > 2 -%}
+            "family": "{{ nameParts | last }}",
+            "given": [
+                {% assign givenCount = nameParts.size | minus: 1 -%}
+                {% for i in (0..givenCount) -%}
+                {% if i < givenCount -%}
+                "{{ nameParts[i] }}"{% unless i == givenCount | minus: 1 %},{% endunless %}
+                {% endif -%}
+                {% endfor -%}
+            ]
+            {% else -%}
+            "text": "{{ msg.name }}"
+            {% endif -%}
+        }
+    ],
+    {% elsif msg.firstName or msg.first_name or msg.lastName or msg.last_name -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.lastName or msg.last_name -%}
+            "family": "{{ msg.lastName | default: msg.last_name }}",
+            {% endif -%}
+            {% if msg.firstName or msg.first_name -%}
+            "given": [
+                "{{ msg.firstName | default: msg.first_name }}"
+            ]
+            {% endif -%}
+        }
+    ],
+    {% endif -%}
+    {% comment -%} Handle minimal birth date {% endcomment -%}
+    {% if msg.dob or msg.dateOfBirth or msg.birthDate -%}
+    "birthDate": "{{ msg.dob | default: msg.dateOfBirth | default: msg.birthDate }}",
+    {% endif -%}
+    {% comment -%} Handle minimal gender {% endcomment -%}
+    {% if msg.gender or msg.sex -%}
+    "gender": {% assign minimalGender = msg.gender | default: msg.sex -%}
+        {% if minimalGender == 'M' or minimalGender == 'Male' or minimalGender == 'male' or minimalGender == '1' -%}
+            "male"
+        {% elsif minimalGender == 'F' or minimalGender == 'Female' or minimalGender == 'female' or minimalGender == '2' -%}
+            "female"
+        {% elsif minimalGender == 'U' or minimalGender == 'Unknown' or minimalGender == 'unknown' or minimalGender == '0' -%}
+            "unknown"
+        {% else -%}
+            "other"
+        {% endif -%},
+    {% endif -%}
+    {% comment -%} Handle minimal contact info {% endcomment -%}
+    {% if msg.phone or msg.email -%}
+    "telecom": [
+        {% if msg.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.phone }}"
+        }{% if msg.email %},{% endif %}
+        {% endif -%}
+        {% if msg.email -%}
+        {
+            "system": "email",
+            "value": "{{ msg.email }}"
+        }
+        {% endif -%}
+    ],
+    {% endif -%}
+    {% comment -%} Default managing organization {% endcomment -%}
+    "managingOrganization": {
+        "reference": "Organization/2.16.840.1.113883.19.5",
+        "display": "Good Health Clinic"
+    }
+}

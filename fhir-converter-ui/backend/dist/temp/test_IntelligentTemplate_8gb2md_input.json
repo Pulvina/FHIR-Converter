@@ -1,0 +1,21 @@
+{
+  "patientId": "HOSP-88342",
+  "firstName": "David",
+  "lastName": "Cohen",
+  "dateOfBirth": "1982-09-30",
+  "sex": "M",
+  "address": {
+    "street": "45 Herzl Street",
+    "city": "Tel Aviv",
+    "postalCode": "61000",
+    "country": "IL"
+  },
+  "contact": {
+    "phone": "+972-54-1234567",
+    "email": "david.cohen@example.com"
+  },
+  "insurance": {
+    "provider": "Maccabi",
+    "policyNumber": "MCB-998877"
+  }
+}

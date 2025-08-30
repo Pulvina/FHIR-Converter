@@ -1,0 +1,66 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient: {{ msg.personalInfo.name.first | default: msg.demographics.name.given | default: msg.patient.name.firstName }} {{ msg.personalInfo.name.last | default: msg.demographics.name.family | default: msg.patient.name.lastName }}</div>"
+    },
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            {% comment -%} Handle various nested structures {% endcomment -%}
+            {% assign familyName = msg.personalInfo.name.last | default: msg.demographics.name.family | default: msg.patient.name.lastName | default: msg.name.family | default: msg.name.surname -%}
+            {% assign givenName = msg.personalInfo.name.first | default: msg.demographics.name.given | default: msg.patient.name.firstName | default: msg.name.given | default: msg.name.first -%}
+            
+            {% if familyName -%}
+            "family": "{{ familyName }}",
+            {% endif -%}
+            {% if givenName -%}
+            "given": [
+                {% if givenName contains ',' -%}
+                {% assign givenNames = givenName | split: ',' -%}
+                {% for name in givenNames -%}
+                "{{ name | strip }}"{% unless forloop.last %},{% endunless %}
+                {% endfor -%}
+                {% else -%}
+                "{{ givenName }}"
+                {% endif -%}
+                {% comment -%} Add middle name if present {% endcomment -%}
+                {% assign middleName = msg.personalInfo.name.middle | default: msg.demographics.name.middle | default: msg.patient.name.middleName | default: msg.name.middle -%}
+                {% if middleName -%}
+                ,"{{ middleName }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% comment -%} Handle prefix/suffix from nested structure {% endcomment -%}
+            {% assign prefix = msg.personalInfo.name.prefix | default: msg.demographics.name.title | default: msg.patient.name.title | default: msg.name.prefix -%}
+            {% if prefix -%}
+            "prefix": ["{{ prefix }}"],
+            {% endif -%}
+            {% assign suffix = msg.personalInfo.name.suffix | default: msg.demographics.name.suffix | default: msg.patient.name.suffix | default: msg.name.suffix -%}
+            {% if suffix -%}
+            "suffix": ["{{ suffix }}"]
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Handle birth date from nested structure {% endcomment -%}
+    {% assign birthDate = msg.personalInfo.birthDate | default: msg.demographics.dateOfBirth | default: msg.patient.dob | default: msg.birthInfo.date -%}
+    {% if birthDate -%}
+    "birthDate": "{{ birthDate }}",
+    {% endif -%}
+    {% comment -%} Handle gender from nested structure {% endcomment -%}
+    {% assign gender = msg.personalInfo.gender | default: msg.demographics.sex | default: msg.patient.gender | default: msg.gender -%}
+    {% if gender -%}
+    "gender": {% assign g = gender | downcase -%}
+        {% if g == 'male' or g == 'm' -%}"male"
+        {% elsif g == 'female' or g == 'f' -%}"female"
+        {% elsif g == 'other' or g == 'o' -%}"other"
+        {% else -%}"unknown"
+        {% endif -%},
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/integrated",
+        "display": "Integrated Healthcare System"
+    }
+}

@@ -1,0 +1,18 @@
+{
+  "subjectId": "R12345",
+  "demographics": {
+    "age": 29,
+    "gender": "female",
+    "ethnicity": "Ashkenazi Jewish"
+  },
+  "lifestyle": {
+    "smoker": false,
+    "alcohol": "moderate",
+    "exerciseFrequency": "3-4 times/week"
+  },
+  "studyParticipation": {
+    "studyName": "Cognitive Aging Study 2025",
+    "enrolledDate": "2025-02-10",
+    "consentSigned": true
+  }
+}

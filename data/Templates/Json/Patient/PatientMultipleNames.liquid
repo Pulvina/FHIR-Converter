@@ -1,0 +1,87 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with {{ msg.names.size | default: 'multiple' }} names{% if msg.names[0] %}: {{ msg.names[0].firstName | default: msg.names[0].givenName }} {{ msg.names[0].lastName | default: msg.names[0].familyName }}{% endif %}</div>"
+    },
+    "active": true,
+    {% if msg.names -%}
+    "name": [
+        {% for name in msg.names -%}
+        {
+            {% comment -%} Determine name use based on array position or explicit field {% endcomment -%}
+            "use": "{% if name.use %}{{ name.use }}{% elsif forloop.first %}official{% elsif name.type == 'maiden' %}maiden{% elsif name.type == 'nickname' %}nickname{% else %}usual{% endif %}",
+            {% if name.lastName or name.familyName or name.family -%}
+            "family": "{{ name.lastName | default: name.familyName | default: name.family }}",
+            {% endif -%}
+            {% if name.firstName or name.givenName or name.given -%}
+            "given": [
+                {% if name.firstName -%}
+                "{{ name.firstName }}"{% if name.middleName %},{{ name.middleName }}{% endif %}
+                {% elsif name.givenName -%}
+                "{{ name.givenName }}"
+                {% elsif name.given -%}
+                {% if name.given contains ',' -%}
+                {% assign givenNames = name.given | split: ',' -%}
+                {% for givenName in givenNames -%}
+                "{{ givenName | strip }}"{% unless forloop.last %},{% endunless %}
+                {% endfor -%}
+                {% else -%}
+                "{{ name.given }}"
+                {% endif -%}
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if name.prefix or name.title -%}
+            "prefix": ["{{ name.prefix | default: name.title }}"],
+            {% endif -%}
+            {% if name.suffix -%}
+            "suffix": ["{{ name.suffix }}"],
+            {% endif -%}
+            {% if name.period -%}
+            "period": {
+                {% if name.period.start -%}
+                "start": "{{ name.period.start }}",
+                {% endif -%}
+                {% if name.period.end -%}
+                "end": "{{ name.period.end }}"
+                {% endif -%}
+            }
+            {% endif -%}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+    ],
+    {% endif -%}
+    {% if msg.birthDate or msg.dob or msg.dateOfBirth -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob | default: msg.dateOfBirth }}",
+    {% endif -%}
+    {% if msg.gender or msg.sex -%}
+    "gender": {% assign g = msg.gender | default: msg.sex | downcase -%}
+        {% if g == 'male' or g == 'm' -%}"male"
+        {% elsif g == 'female' or g == 'f' -%}"female"
+        {% elsif g == 'other' or g == 'o' -%}"other"
+        {% else -%}"unknown"
+        {% endif -%},
+    {% endif -%}
+    {% comment -%} Add name history extension if multiple names with periods {% endcomment -%}
+    {% assign hasNameHistory = false -%}
+    {% for name in msg.names -%}
+    {% if name.period -%}
+    {% assign hasNameHistory = true -%}
+    {% break -%}
+    {% endif -%}
+    {% endfor -%}
+    {% if hasNameHistory -%}
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-name-history",
+            "valueBoolean": true
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/registry",
+        "display": "Name Registry System"
+    }
+}

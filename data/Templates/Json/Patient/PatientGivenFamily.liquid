@@ -1,0 +1,58 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient: {% if msg.firstName or msg.givenName %}{{ msg.firstName | default: msg.givenName }} {% endif %}{{ msg.lastName | default: msg.familyName | default: msg.surname }}</div>"
+    },
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            {% if msg.lastName or msg.familyName or msg.surname -%}
+            "family": "{{ msg.lastName | default: msg.familyName | default: msg.surname }}",
+            {% endif -%}
+            {% if msg.firstName or msg.givenName or msg.given -%}
+            "given": [
+                {% if msg.firstName -%}
+                "{{ msg.firstName }}"
+                {% elsif msg.givenName -%}
+                "{{ msg.givenName }}"
+                {% elsif msg.given -%}
+                {% if msg.given contains ',' -%}
+                {% assign givenNames = msg.given | split: ',' -%}
+                {% for name in givenNames -%}
+                "{{ name | strip }}"{% unless forloop.last %},{% endunless %}
+                {% endfor -%}
+                {% else -%}
+                "{{ msg.given }}"
+                {% endif -%}
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if msg.middleName or msg.middleInitial -%}
+            "extension": [
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/humanname-middle-name",
+                    "valueString": "{{ msg.middleName | default: msg.middleInitial }}"
+                }
+            ]
+            {% endif -%}
+        }
+    ],
+    {% if msg.birthDate or msg.dob or msg.dateOfBirth -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob | default: msg.dateOfBirth }}",
+    {% endif -%}
+    {% if msg.gender or msg.sex -%}
+    "gender": {% assign g = msg.gender | default: msg.sex | downcase -%}
+        {% if g == 'male' or g == 'm' -%}"male"
+        {% elsif g == 'female' or g == 'f' -%}"female"
+        {% elsif g == 'other' or g == 'o' -%}"other"
+        {% else -%}"unknown"
+        {% endif -%},
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/primary",
+        "display": "Primary Healthcare System"
+    }
+}

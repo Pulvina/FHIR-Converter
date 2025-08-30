@@ -1,0 +1,94 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with rural address</div>"
+    },
+    "active": true,
+    {% comment -%} Basic name handling {% endcomment -%}
+    "name": [
+        {
+            "use": "official",
+            {% if msg.name -%}
+            "text": "{{ msg.name }}"
+            {% elsif msg.firstName and msg.lastName -%}
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+            {% elsif msg.patientName -%}
+            "text": "{{ msg.patientName }}"
+            {% endif -%}
+        }
+    ],
+    {% comment -%} Rural address handling {% endcomment -%}
+    "address": [
+        {
+            "use": "{{ msg.addressType | default: 'home' | downcase }}",
+            "type": "physical",
+            {% comment -%} Rural address lines {% endcomment -%}
+            {% if msg.ruralRoute or msg.route or msg.roadName or msg.propertyName -%}
+            "line": [
+                {% if msg.ruralRoute -%}
+                "Rural Route {{ msg.ruralRoute }}"
+                {% elsif msg.route -%}
+                "Route {{ msg.route }}"
+                {% elsif msg.roadName -%}
+                "{{ msg.roadName }}"
+                {% elsif msg.propertyName -%}
+                "{{ msg.propertyName }}"
+                {% endif -%}
+                {% if msg.addressLine2 or msg.lot or msg.farmName -%}
+                ,"{{ msg.addressLine2 | default: msg.lot | default: msg.farmName }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if msg.city or msg.town or msg.township -%}
+            "city": "{{ msg.city | default: msg.town | default: msg.township }}",
+            {% endif -%}
+            {% if msg.state or msg.province or msg.county -%}
+            "state": "{{ msg.state | default: msg.province | default: msg.county }}",
+            {% endif -%}
+            {% if msg.zip or msg.zipCode or msg.postalCode -%}
+            "postalCode": "{{ msg.zip | default: msg.zipCode | default: msg.postalCode }}",
+            {% endif -%}
+            {% if msg.country -%}
+            "country": "{{ msg.country }}",
+            {% endif -%}
+            {% comment -%} Rural-specific extensions {% endcomment -%}
+            "extension": [
+                {% if msg.ruralDelivery -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-deliveryModeIdentifier",
+                    "valueString": "{{ msg.ruralDelivery }}"
+                },
+                {% endif -%}
+                {% if msg.gpsCoordinates or msg.latitude and msg.longitude -%}
+                {
+                    "url": "http://hl7.org/fhir/StructureDefinition/geolocation",
+                    {% if msg.gpsCoordinates -%}
+                    "valueString": "{{ msg.gpsCoordinates }}"
+                    {% elsif msg.latitude and msg.longitude -%}
+                    "extension": [
+                        {
+                            "url": "latitude",
+                            "valueDecimal": {{ msg.latitude }}
+                        },
+                        {
+                            "url": "longitude", 
+                            "valueDecimal": {{ msg.longitude }}
+                        }
+                    ]
+                    {% endif -%}
+                }
+                {% endif -%}
+            ]
+        }
+    ],
+    {% if msg.birthDate or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/rural-health",
+        "display": "Rural Health Services"
+    }
+}

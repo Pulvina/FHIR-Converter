@@ -1,0 +1,59 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient: {% if msg.prefix or msg.title %}{{ msg.prefix | default: msg.title }} {% endif %}{{ msg.firstName | default: msg.givenName }} {{ msg.lastName | default: msg.familyName }}{% if msg.suffix %} {{ msg.suffix }}{% endif %}</div>"
+    },
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            {% if msg.prefix or msg.title -%}
+            "prefix": [
+                "{{ msg.prefix | default: msg.title }}"
+            ],
+            {% endif -%}
+            {% if msg.lastName or msg.familyName or msg.surname -%}
+            "family": "{{ msg.lastName | default: msg.familyName | default: msg.surname }}",
+            {% endif -%}
+            {% if msg.firstName or msg.givenName -%}
+            "given": [
+                "{{ msg.firstName | default: msg.givenName }}"
+                {% if msg.middleName -%}
+                ,"{{ msg.middleName }}"
+                {% endif -%}
+            ],
+            {% endif -%}
+            {% if msg.suffix or msg.suffixName -%}
+            "suffix": [
+                "{{ msg.suffix | default: msg.suffixName }}"
+            ]
+            {% endif -%}
+        }
+    ],
+    {% if msg.birthDate or msg.dob or msg.dateOfBirth -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob | default: msg.dateOfBirth }}",
+    {% endif -%}
+    {% if msg.gender or msg.sex -%}
+    "gender": {% assign g = msg.gender | default: msg.sex | downcase -%}
+        {% if g == 'male' or g == 'm' -%}"male"
+        {% elsif g == 'female' or g == 'f' -%}"female"
+        {% elsif g == 'other' or g == 'o' -%}"other"
+        {% else -%}"unknown"
+        {% endif -%},
+    {% endif -%}
+    {% comment -%} Add professional designation if present {% endcomment -%}
+    {% if msg.profession or msg.degree or msg.credentials -%}
+    "extension": [
+        {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-profession",
+            "valueString": "{{ msg.profession | default: msg.degree | default: msg.credentials }}"
+        }
+    ],
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/professional",
+        "display": "Professional Healthcare System"
+    }
+}

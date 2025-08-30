@@ -1,0 +1,48 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient: {{ msg.name | default: msg.fullName | default: msg.patientName }}</div>"
+    },
+    "active": true,
+    "name": [
+        {
+            "use": "official",
+            {% comment -%} Parse full name into components {% endcomment -%}
+            {% assign fullName = msg.name | default: msg.fullName | default: msg.patientName -%}
+            {% assign nameParts = fullName | split: ' ' -%}
+            {% if nameParts.size == 1 -%}
+            "text": "{{ fullName }}"
+            {% elsif nameParts.size == 2 -%}
+            "family": "{{ nameParts[1] }}",
+            "given": ["{{ nameParts[0] }}"]
+            {% else -%}
+            "family": "{{ nameParts | last }}",
+            "given": [
+                {% assign givenCount = nameParts.size | minus: 1 -%}
+                {% for i in (0..givenCount) -%}
+                {% if i < givenCount -%}
+                "{{ nameParts[i] }}"{% unless i == givenCount | minus: 1 %},{% endunless %}
+                {% endif -%}
+                {% endfor -%}
+            ]
+            {% endif -%}
+        }
+    ],
+    {% if msg.birthDate or msg.dob or msg.dateOfBirth -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dob | default: msg.dateOfBirth }}",
+    {% endif -%}
+    {% if msg.gender or msg.sex -%}
+    "gender": {% assign g = msg.gender | default: msg.sex | downcase -%}
+        {% if g == 'male' or g == 'm' -%}"male"
+        {% elsif g == 'female' or g == 'f' -%}"female"
+        {% elsif g == 'other' or g == 'o' -%}"other"
+        {% else -%}"unknown"
+        {% endif -%},
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/primary",
+        "display": "Primary Healthcare System"
+    }
+}

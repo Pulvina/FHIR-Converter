@@ -1,0 +1,15 @@
+{
+  "patient_id": 11111,
+  "first_name": "Alice",
+  "last_name": "Wilson",
+  "date_of_birth": "1992-05-18",
+  "patient_gender": "F",
+  "phone_number": "555-4567",
+  "email_address": "alice.wilson@email.com",
+  "medical_record_number": "MRN11111",
+  "emergency_contact": {
+    "name": "Bob Wilson",
+    "relationship": "Husband",
+    "phone": "555-7890"
+  }
+}

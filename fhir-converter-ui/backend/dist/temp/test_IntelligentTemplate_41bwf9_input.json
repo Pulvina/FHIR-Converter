@@ -1,0 +1,15 @@
+{
+  "resourceType": "Patient",
+  "id": "p002",
+  "name": [
+    {
+      "use": "official",
+      "family": "Smith",
+      "given": [
+        "John",
+        "Michael"
+      ]
+    }
+  ],
+  "gender": "male"
+}

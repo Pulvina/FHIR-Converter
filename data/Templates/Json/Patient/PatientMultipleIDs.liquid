@@ -1,0 +1,161 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.primaryId | default: msg.identifiers[0].value | default: msg.ids[0] | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Patient with {{ msg.identifiers.size | default: msg.ids.size | default: 'multiple' }} identifiers{% if msg.name %}: {{ msg.name }}{% endif %}</div>"
+    },
+    "identifier": [
+        {% comment -%} Handle array of identifier objects {% endcomment -%}
+        {% if msg.identifiers -%}
+        {% for identifier in msg.identifiers -%}
+        {
+            "use": "{{ identifier.use | default: 'usual' }}",
+            {% if identifier.type -%}
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "{{ identifier.type }}",
+                        "display": "{{ identifier.typeDisplay | default: identifier.type }}"
+                    }
+                ],
+                {% if identifier.typeText -%}
+                "text": "{{ identifier.typeText }}"
+                {% endif -%}
+            },
+            {% endif -%}
+            {% if identifier.system -%}
+            "system": "{{ identifier.system }}",
+            {% endif -%}
+            "value": "{{ identifier.value }}",
+            {% if identifier.period -%}
+            "period": {
+                {% if identifier.period.start -%}
+                "start": "{{ identifier.period.start }}",
+                {% endif -%}
+                {% if identifier.period.end -%}
+                "end": "{{ identifier.period.end }}"
+                {% endif -%}
+            },
+            {% endif -%}
+            {% if identifier.assigner -%}
+            "assigner": {
+                "display": "{{ identifier.assigner }}"
+            }
+            {% endif -%}
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+        {% comment -%} Handle simple array of IDs {% endcomment -%}
+        {% elsif msg.ids -%}
+        {% for id in msg.ids -%}
+        {
+            "use": "{% if forloop.first %}usual{% else %}secondary{% endif %}",
+            "value": "{{ id }}"
+        }{% unless forloop.last %},{% endunless %}
+        {% endfor -%}
+        {% comment -%} Handle individual ID fields {% endcomment -%}
+        {% else -%}
+        {% if msg.mrn or msg.medicalRecordNumber -%}
+        {
+            "use": "usual",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MR",
+                        "display": "Medical record number"
+                    }
+                ]
+            },
+            "value": "{{ msg.mrn | default: msg.medicalRecordNumber }}"
+        },
+        {% endif -%}
+        {% if msg.ssn or msg.socialSecurityNumber -%}
+        {
+            "use": "official",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "SS",
+                        "display": "Social Security number"
+                    }
+                ]
+            },
+            "system": "http://hl7.org/fhir/sid/us-ssn",
+            "value": "{{ msg.ssn | default: msg.socialSecurityNumber }}"
+        },
+        {% endif -%}
+        {% if msg.driverLicense -%}
+        {
+            "use": "secondary",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "DL",
+                        "display": "Driver's license number"
+                    }
+                ]
+            },
+            "value": "{{ msg.driverLicense }}"
+        },
+        {% endif -%}
+        {% if msg.passportNumber -%}
+        {
+            "use": "official",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "PPN",
+                        "display": "Passport number"
+                    }
+                ]
+            },
+            "value": "{{ msg.passportNumber }}"
+        },
+        {% endif -%}
+        {% if msg.insuranceId or msg.memberId -%}
+        {
+            "use": "secondary",
+            "type": {
+                "coding": [
+                    {
+                        "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                        "code": "MB",
+                        "display": "Member number"
+                    }
+                ]
+            },
+            "value": "{{ msg.insuranceId | default: msg.memberId }}"
+        }
+        {% endif -%}
+        {% endif -%}
+    ],
+    "active": true,
+    {% if msg.name or msg.patientName or msg.demographics.name -%}
+    "name": [
+        {
+            "use": "official",
+            "text": "{{ msg.name | default: msg.patientName | default: msg.demographics.name }}"
+        }
+    ],
+    {% endif -%}
+    {% if msg.birthDate or msg.dateOfBirth or msg.dob -%}
+    "birthDate": "{{ msg.birthDate | default: msg.dateOfBirth | default: msg.dob }}",
+    {% endif -%}
+    {% if msg.gender or msg.sex -%}
+    "gender": {% assign g = msg.gender | default: msg.sex | downcase -%}
+        {% if g == 'male' or g == 'm' -%}"male"
+        {% elsif g == 'female' or g == 'f' -%}"female"
+        {% elsif g == 'other' or g == 'o' -%}"other"
+        {% else -%}"unknown"
+        {% endif -%},
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/primary",
+        "display": "Primary Healthcare Organization"
+    }
+}

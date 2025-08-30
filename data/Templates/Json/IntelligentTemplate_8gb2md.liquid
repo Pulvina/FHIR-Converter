@@ -1,0 +1,91 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.patientId | to_json_string | generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Intelligent Patient Template</div>"
+    },
+    "active": true,
+    "identifier": [
+        {
+            "use": "usual",
+            "type": {
+                "coding": [{
+                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                    "code": "MR",
+                    "display": "Medical record number"
+                }]
+            },
+            "system": "urn:oid:2.16.840.1.113883.4.1",
+            "value": "{{ msg.patientId }}"
+        },
+        {
+            "use": "usual",
+            "type": {
+                "coding": [{
+                    "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                    "code": "NIIP",
+                    "display": "National Insurance Payor Identifier (Payor)"
+                }]
+            },
+            "system": "urn:oid:2.16.840.1.113883.4.4",
+            "value": "{{ msg.insurance.policyNumber }}"
+        }
+    ],
+    "name": [
+        {
+            "use": "official",
+            "family": "{{ msg.lastName }}",
+            "given": ["{{ msg.firstName }}"]
+        }
+    ],
+    {% if msg.sex -%}
+    "gender": {% assign g = msg.sex | downcase -%}
+        {% case g -%}
+            {% when 'm' -%}"male"
+            {% when 'male' -%}"male"
+            {% when 'man' -%}"male"
+            {% when 'f' -%}"female"
+            {% when 'female' -%}"female"
+            {% when 'woman' -%}"female"
+            {% when 'o' -%}"other"
+            {% when 'other' -%}"other"
+            {% when 'u' -%}"unknown"
+            {% when 'unknown' -%}"unknown"
+            {% when 'n/a' -%}"unknown"
+            {% else -%}"unknown"
+        {% endcase -%},
+    {% endif -%}
+    {% if msg.dateOfBirth -%}
+    "birthDate": "{{ msg.dateOfBirth }}",
+    {% endif -%}
+    "telecom": [
+        {% if msg.contact.phone -%}
+        {
+            "system": "phone",
+            "value": "{{ msg.contact.phone }}",
+            "use": "home"
+        }{% if msg.contact.email %},{% endif %}
+        {% endif -%}
+        {% if msg.contact.email -%}
+        {
+            "system": "email",
+            "value": "{{ msg.contact.email }}",
+            "use": "home"
+        }
+        {% endif -%}
+    ],
+    "address": [
+        {
+            "use": "home",
+            "line": ["{{ msg.address.street }}"],
+            "city": "{{ msg.address.city }}",
+            "postalCode": "{{ msg.address.postalCode }}",
+            "country": "{{ msg.address.country }}"
+        }
+    ],
+    "managingOrganization": {
+        "reference": "Organization/intelligent-system",
+        "display": "Intelligent Template System"
+    }
+}

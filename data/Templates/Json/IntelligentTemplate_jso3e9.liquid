@@ -1,0 +1,28 @@
+{
+    "resourceType": "Patient",
+    "id": "{{ msg.id | default: generate_uuid }}",
+    "text": {
+        "status": "generated",
+        "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">FHIR-Structured Patient Data</div>"
+    },
+    "active": true,
+    "name": [
+        {
+            "use": "{{ msg.name[0].use }}",
+            "family": "{{ msg.name[0].family }}",
+            "given": [
+                "{{ msg.name[0].given[0] }}"
+            ]
+        }
+    ],
+    {% if msg.gender -%}
+    "gender": "{{ msg.gender }}",
+    {% endif -%}
+    {% if msg.birthDate -%}
+    "birthDate": "{{ msg.birthDate }}",
+    {% endif -%}
+    "managingOrganization": {
+        "reference": "Organization/fhir-passthrough",
+        "display": "FHIR Passthrough System"
+    }
+}
